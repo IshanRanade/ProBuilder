@@ -1,5 +1,6 @@
 from Qt import QtCore, QtWidgets
 import nodz_main
+import DerivationTree
 
 try:
     app = QtWidgets.QApplication([])
