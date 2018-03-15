@@ -2,6 +2,7 @@ from Qt import QtCore, QtWidgets
 import nodz_main
 from DerivationTree import NodeType
 from DerivationTree import Node
+import AttributeEditor
 
 
 ######################################################################
@@ -111,6 +112,11 @@ nodz.signal_KeyPressed.connect(on_keyPressed)
 
 root = Node(NodeType.init, nodz)
 root.addChild(NodeType.translate, nodz)
+
+gui = AttributeEditor.AttributeEditor(None)
+#gui.addElements()
+#gui.initialize()
+gui.show()
 
 
 # Graph
