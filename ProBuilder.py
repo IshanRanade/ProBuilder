@@ -26,7 +26,9 @@ def on_nodeEdited(nodeName, newName):
 def on_nodeSelected(nodesName):
 
     global gui
-    gui.changeWidget(NodeType.translate)
+    global nodzToNode
+
+    gui.changeWidget(nodzToNode[nodesName].nodeType)
 
     print 'node selected : ', nodesName
 
@@ -84,6 +86,8 @@ except:
     # I guess we're running somewhere that already has a QApp created
     app = None
 
+nodzToNode = {}
+
 nodz = nodz_main.Nodz(None)
 # nodz.loadConfig(filePath='')
 nodz.initialize()
@@ -94,8 +98,8 @@ nodz.signal_NodeSelected.connect(on_nodeSelected)
 nodz.signal_KeyPressed.connect(on_keyPressed)
 
 
-root = Node(NodeType.init, nodz)
-root.addChild(NodeType.translate, nodz)
+root = Node(NodeType.init, nodz, nodzToNode)
+root.addChild(NodeType.translate, nodz, nodzToNode)
 
 gui = AttributeEditor.AttributeEditor(NodeType.init)
 gui.show()

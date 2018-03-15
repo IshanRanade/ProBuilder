@@ -19,14 +19,11 @@ class AttributeEditor(QtWidgets.QMainWindow):
 
 		self.setWindowTitle(NodeType.getString(type))
 
-	def changeTitle(self, title):
-		self.setWindowTitle(title)
-
 	def changeWidget(self, nodeType):
 		self.setWindowTitle(NodeType.getString(nodeType))
 
 		if nodeType == NodeType.init:
-			self.form_widget = WidgetSplt(self)
+			self.form_widget = WidgetSplit(self)
 		elif nodeType == NodeType.translate:
 			self.form_widget = WidgetTranslate(self)
 		elif nodeType == NodeType.rotate:
