@@ -1,10 +1,10 @@
 import numpy
 
 class NodeType(object):
-	translateNode = 0
-	rotateNode = 1
-	scaleNode = 2
-	initNode = 3
+	translate = 0
+	rotate = 1
+	scale = 2
+	init = 3
 
 	@staticmethod
 	def getString(nodeType):
@@ -37,7 +37,17 @@ class Node(object):
 
 		self.nodzNode = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
 		nodz.createAttribute(node=self.nodzNode, name='Aattr1', index=-1, preset='attr_preset_1',
-                     plug=True, socket=False, dataType=str)
+                     plug=True, socket=True, dataType=str)
+
+	def addChild(self, nodeType, nodz):
+		newChild = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
+		nodz.createAttribute(node=newChild, name='Aattr1', index=-1, preset='attr_preset_1',
+                     plug=True, socket=True, dataType=str)
+
+
+		nodz.createConnection(newChild, 'Aattr1', self.nodzNode, 'Aattr1')
+
+		self.children.append(newChild)
 
 
 class DerivationTree(object):
@@ -46,4 +56,4 @@ class DerivationTree(object):
 	nodz = None
 
 	def __init__(self, nodz):
-		self.root = Node(NodeType.initNode, nodz)
+		self.root = Node(NodeType.init, nodz)

@@ -1,6 +1,7 @@
 from Qt import QtCore, QtWidgets
 import nodz_main
-import DerivationTree
+from DerivationTree import NodeType
+from DerivationTree import Node
 
 
 ######################################################################
@@ -108,7 +109,8 @@ nodz.signal_KeyPressed.connect(on_keyPressed)
 
 
 
-tree = DerivationTree.DerivationTree(nodz)
+root = Node(NodeType.init, nodz)
+root.addChild(NodeType.translate, nodz)
 
 
 # Graph

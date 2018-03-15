@@ -901,8 +901,8 @@ class Nodz(QtWidgets.QGraphicsView):
         :param targetAttr: Attribute that receives the connection.
 
         """
-        plug = self.scene().nodes[sourceNode].plugs[sourceAttr]
-        socket = self.scene().nodes[targetNode].sockets[targetAttr]
+        plug = sourceNode.plugs[sourceAttr]
+        socket = targetNode.sockets[targetAttr]
 
         connection = ConnectionItem(plug.center(), socket.center(), plug, socket)
 
