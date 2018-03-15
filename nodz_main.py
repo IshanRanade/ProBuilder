@@ -421,7 +421,8 @@ class Nodz(QtWidgets.QGraphicsView):
                 selected_nodes.append(node)
 
         # Emit signal.
-        self.signal_NodeSelected.emit(selected_nodes[0])
+
+        self.signal_NodeSelected.emit(selected_nodes[0] if len(selected_nodes) > 0 else None)
 
 
     ##################################################################

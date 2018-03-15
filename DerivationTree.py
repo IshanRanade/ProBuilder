@@ -6,6 +6,7 @@ class NodeType(object):
 	scale = 2
 	init = 3
 	split = 4
+	mesh = 5
 
 	@staticmethod
 	def getString(nodeType):
@@ -19,6 +20,8 @@ class NodeType(object):
 			return "Initial"
 		if nodeType == 4:
 			return "Split"
+		if nodeType == 5:
+			return "Mesh"
 
 class Node(object):
 
@@ -46,7 +49,7 @@ class Node(object):
 
 	def addChild(self, nodeType, nodz, nodzToNode):
 		newChild = Node(nodeType, nodz, nodzToNode)
-		nodz.createConnection(newChild.nodzNode, 'Aattr1', self.nodzNode, 'Aattr1')
+		nodz.createConnection(self.nodzNode, 'Aattr1', newChild.nodzNode, 'Aattr1')
 		self.children.append(newChild)
 
 
