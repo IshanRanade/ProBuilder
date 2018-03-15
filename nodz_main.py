@@ -418,10 +418,10 @@ class Nodz(QtWidgets.QGraphicsView):
         selected_nodes = list()
         if self.scene().selectedItems():
             for node in self.scene().selectedItems():
-                selected_nodes.append(node.name)
+                selected_nodes.append(node)
 
         # Emit signal.
-        self.signal_NodeSelected.emit(selected_nodes)
+        self.signal_NodeSelected.emit(selected_nodes[0])
 
 
     ##################################################################

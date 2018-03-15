@@ -5,6 +5,7 @@ class NodeType(object):
 	rotate = 1
 	scale = 2
 	init = 3
+	split = 4
 
 	@staticmethod
 	def getString(nodeType):
@@ -16,6 +17,8 @@ class NodeType(object):
 			return "Scale"
 		if nodeType == 3:
 			return "Initial"
+		if nodeType == 4:
+			return "Split"
 
 class Node(object):
 

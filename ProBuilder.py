@@ -24,6 +24,10 @@ def on_nodeEdited(nodeName, newName):
 
 @QtCore.Slot(str)
 def on_nodeSelected(nodesName):
+
+    global gui
+    gui.changeWidget(NodeType.translate)
+
     print 'node selected : ', nodesName
 
 @QtCore.Slot(str, object)
@@ -85,45 +89,20 @@ nodz = nodz_main.Nodz(None)
 nodz.initialize()
 nodz.show()
 
-nodz.signal_NodeCreated.connect(on_nodeCreated)
-nodz.signal_NodeDeleted.connect(on_nodeDeleted)
-nodz.signal_NodeEdited.connect(on_nodeEdited)
+
 nodz.signal_NodeSelected.connect(on_nodeSelected)
-nodz.signal_NodeMoved.connect(on_nodeMoved)
-
-nodz.signal_AttrCreated.connect(on_attrCreated)
-nodz.signal_AttrDeleted.connect(on_attrDeleted)
-nodz.signal_AttrEdited.connect(on_attrEdited)
-
-nodz.signal_PlugConnected.connect(on_connected)
-nodz.signal_SocketConnected.connect(on_connected)
-nodz.signal_PlugDisconnected.connect(on_disconnected)
-nodz.signal_SocketDisconnected.connect(on_disconnected)
-
-nodz.signal_GraphSaved.connect(on_graphSaved)
-nodz.signal_GraphLoaded.connect(on_graphLoaded)
-nodz.signal_GraphCleared.connect(on_graphCleared)
-nodz.signal_GraphEvaluated.connect(on_graphEvaluated)
-
 nodz.signal_KeyPressed.connect(on_keyPressed)
-
-
 
 
 root = Node(NodeType.init, nodz)
 root.addChild(NodeType.translate, nodz)
 
-gui = AttributeEditor.AttributeEditor(None)
-#gui.addElements()
-#gui.initialize()
+gui = AttributeEditor.AttributeEditor(NodeType.init)
 gui.show()
 
 
 # Graph
 print nodz.evaluateGraph()
-
-
-
 
 if app:
     # command line stand alone test... run our own event loop
