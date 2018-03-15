@@ -2,17 +2,6 @@ from Qt import QtCore, QtWidgets
 import nodz_main
 import DerivationTree
 
-try:
-    app = QtWidgets.QApplication([])
-except:
-    # I guess we're running somewhere that already has a QApp created
-    app = None
-
-nodz = nodz_main.Nodz(None)
-# nodz.loadConfig(filePath='')
-nodz.initialize()
-nodz.show()
-
 
 ######################################################################
 # Test signals
@@ -83,6 +72,17 @@ def on_graphEvaluated():
 def on_keyPressed(key):
     print 'key pressed : ', key
 
+try:
+    app = QtWidgets.QApplication([])
+except:
+    # I guess we're running somewhere that already has a QApp created
+    app = None
+
+nodz = nodz_main.Nodz(None)
+# nodz.loadConfig(filePath='')
+nodz.initialize()
+nodz.show()
+
 nodz.signal_NodeCreated.connect(on_nodeCreated)
 nodz.signal_NodeDeleted.connect(on_nodeDeleted)
 nodz.signal_NodeEdited.connect(on_nodeEdited)
@@ -106,98 +106,14 @@ nodz.signal_GraphEvaluated.connect(on_graphEvaluated)
 nodz.signal_KeyPressed.connect(on_keyPressed)
 
 
-######################################################################
-# Test API
-######################################################################
-
-# Node A
-nodeA = nodz.createNode(name='nodeA', preset='node_preset_1', position=None)
-
-nodz.createAttribute(node=nodeA, name='Aattr1', index=-1, preset='attr_preset_1',
-                     plug=True, socket=False, dataType=str)
-
-nodz.createAttribute(node=nodeA, name='Aattr2', index=-1, preset='attr_preset_1',
-                     plug=False, socket=False, dataType=int)
-
-nodz.createAttribute(node=nodeA, name='Aattr3', index=-1, preset='attr_preset_2',
-                     plug=True, socket=True, dataType=int)
-
-nodz.createAttribute(node=nodeA, name='Aattr4', index=-1, preset='attr_preset_2',
-                     plug=True, socket=True, dataType=str)
 
 
-
-# Node B
-nodeB = nodz.createNode(name='nodeB', preset='node_preset_1')
-
-nodz.createAttribute(node=nodeB, name='Battr1', index=-1, preset='attr_preset_1',
-                     plug=True, socket=False, dataType=str)
-
-nodz.createAttribute(node=nodeB, name='Battr2', index=-1, preset='attr_preset_1',
-                     plug=True, socket=False, dataType=int)
-
-
-
-# Node C
-nodeC = nodz.createNode(name='nodeC', preset='node_preset_1')
-
-nodz.createAttribute(node=nodeC, name='Cattr1', index=-1, preset='attr_preset_1',
-                     plug=False, socket=True, dataType=str)
-
-nodz.createAttribute(node=nodeC, name='Cattr2', index=-1, preset='attr_preset_1',
-                     plug=True, socket=False, dataType=int)
-
-nodz.createAttribute(node=nodeC, name='Cattr3', index=-1, preset='attr_preset_1',
-                     plug=True, socket=False, dataType=str)
-
-nodz.createAttribute(node=nodeC, name='Cattr4', index=-1, preset='attr_preset_2',
-                     plug=False, socket=True, dataType=str)
-
-nodz.createAttribute(node=nodeC, name='Cattr5', index=-1, preset='attr_preset_2',
-                     plug=False, socket=True, dataType=int)
-
-nodz.createAttribute(node=nodeC, name='Cattr6', index=-1, preset='attr_preset_3',
-                     plug=True, socket=False, dataType=str)
-
-nodz.createAttribute(node=nodeC, name='Cattr7', index=-1, preset='attr_preset_3',
-                     plug=True, socket=False, dataType=str)
-
-nodz.createAttribute(node=nodeC, name='Cattr8', index=-1, preset='attr_preset_3',
-                     plug=True, socket=False, dataType=int)
-
-
-# Please note that this is a local test so once the graph is cleared
-# and reloaded, all the local variables are not valid anymore, which
-# means the following code to alter nodes won't work but saving/loading/
-# clearing/evaluating will.
-
-# Connection creation
-nodz.createConnection('nodeB', 'Battr2', 'nodeA', 'Aattr3')
-nodz.createConnection('nodeB', 'Battr1', 'nodeA', 'Aattr4')
-
-# Attributes Edition
-nodz.editAttribute(node=nodeC, index=0, newName=None, newIndex=-1)
-nodz.editAttribute(node=nodeC, index=-1, newName='NewAttrName', newIndex=None)
-
-# Attributes Deletion
-nodz.deleteAttribute(node=nodeC, index=-1)
-
-
-# Nodes Edition
-nodz.editNode(node=nodeC, newName='newNodeName')
-
-# Nodes Deletion
-nodz.deleteNode(node=nodeC)
+tree = DerivationTree.DerivationTree(nodz)
 
 
 # Graph
 print nodz.evaluateGraph()
 
-# nodz.saveGraph(filePath='Enter your path')
-
-# nodz.clearGraph()
-
-# nodz.loadGraph(filePath='Enter your path')
 
 
 
