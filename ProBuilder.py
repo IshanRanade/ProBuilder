@@ -3,6 +3,7 @@ import nodz_main
 from DerivationTree import NodeType
 from DerivationTree import Node
 from GUI import GUI
+from Controller import Controller
 
 
 ######################################################################
@@ -22,14 +23,10 @@ def on_nodeDeleted(nodeName):
 def on_nodeEdited(nodeName, newName):
     print 'node edited : {0}, new name : {1}'.format(nodeName, newName)
 
-@QtCore.Slot(str)
+#@QtCore.Slot(str)
 def on_nodeSelected(node):
 
-    # global gui
-    # global nodzToNode
-    # global currentSelectedNode
-
-    # currentSelectedNode = node
+    currentSelectedNode = node
 
     if node is not None:
         gui.changeEditorWidgetLayout(nodzToNode[node].nodeType)
@@ -65,14 +62,14 @@ except:
     # I guess we're running somewhere that already has a QApp created
     app = None
 
+controller = Controller()
+
 nodzToNode = {}
 currentSelectedNode = None
 
 nodz = nodz_main.Nodz(None)
-# nodz.loadConfig(filePath='')
 nodz.initialize()
 nodz.show()
-
 
 nodz.signal_NodeSelected.connect(on_nodeSelected)
 nodz.signal_KeyPressed.connect(on_keyPressed)
@@ -84,9 +81,6 @@ root.addChild(NodeType.translate, nodz, nodzToNode)
 gui = GUI(NodeType.init, nodz)
 gui.show()
 
-
-# Graph
-print nodz.evaluateGraph()
 
 if app:
     # command line stand alone test... run our own event loop

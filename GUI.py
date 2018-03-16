@@ -16,7 +16,7 @@ class GUI(QtWidgets.QMainWindow):
 		"""
 		super(GUI, self).__init__()
 
-		self.layout = QtWidgets.QVBoxLayout(self)
+		self.layout = QtWidgets.QHBoxLayout(self)
 
 		self.editorTranslate = EditorTranslate(self)
 		self.editorRotate = EditorRotate(self)
@@ -33,6 +33,8 @@ class GUI(QtWidgets.QMainWindow):
 		self.editorWidget.addWidget(self.editorMesh)      #4
 		self.editorWidget.addWidget(self.editorSplit)     #5
 		self.layout.addWidget(self.editorWidget)
+
+		self.editorWidget.setCurrentIndex(3)
 
 		self.nodePickerWidget = NodePickerWidget(self)
 		self.layout.addWidget(self.nodePickerWidget)
@@ -68,11 +70,23 @@ class NodePickerWidget(QtWidgets.QWidget):
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
-		# self.button1 = QtWidgets.QPushButton("Button 1")
-		# self.layout.addWidget(self.button1)
+		self.label = QtWidgets.QLabel("Create Node:")
+		self.layout.addWidget(self.label)
 
-		# self.button2 = QtWidgets.QPushButton("Button 2")
-		# self.layout.addWidget(self.button2)
+		self.button1 = QtWidgets.QPushButton("Translate")
+		self.layout.addWidget(self.button1)
+
+		self.button2 = QtWidgets.QPushButton("Rotate")
+		self.layout.addWidget(self.button2)
+
+		self.button3 = QtWidgets.QPushButton("Scale")
+		self.layout.addWidget(self.button3)
+
+		self.button4 = QtWidgets.QPushButton("Split")
+		self.layout.addWidget(self.button4)
+
+		self.button5 = QtWidgets.QPushButton("Mesh")
+		self.layout.addWidget(self.button5)
 
 		self.setLayout(self.layout)
 
@@ -82,6 +96,9 @@ class EditorTranslate(QtWidgets.QWidget):
 		super(EditorTranslate, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
+
+		self.label = QtWidgets.QLabel("Attribute Editor:")
+		self.layout.addWidget(self.label)
 
 		self.button1 = QtWidgets.QPushButton("Button 1")
 		self.layout.addWidget(self.button1)
@@ -98,6 +115,9 @@ class EditorRotate(QtWidgets.QWidget):
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
+		self.label = QtWidgets.QLabel("Attribute Editor:")
+		self.layout.addWidget(self.label)
+
 		self.button1 = QtWidgets.QPushButton("Button 1")
 		self.layout.addWidget(self.button1)
 
@@ -109,6 +129,9 @@ class EditorScale(QtWidgets.QWidget):
 		super(EditorScale, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
+
+		self.label = QtWidgets.QLabel("Attribute Editor:")
+		self.layout.addWidget(self.label)
 
 		self.button1 = QtWidgets.QPushButton("Button 1")
 		self.layout.addWidget(self.button1)
@@ -125,8 +148,23 @@ class EditorInitial(QtWidgets.QWidget):
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
+		self.lotX = QtWidgets.QHBoxLayout(self)
+		self.lotX.addWidget(QtWidgets.QLabel("Lot X: "))
+		self.lotX.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotX)
+
+		self.lotY = QtWidgets.QHBoxLayout(self)
+		self.lotY.addWidget(QtWidgets.QLabel("Lot Y: "))
+		self.lotY.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotY)
+
+		self.lotZ = QtWidgets.QHBoxLayout(self)
+		self.lotZ.addWidget(QtWidgets.QLabel("Lot Z: "))
+		self.lotZ.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotZ)
+
+		# self.button1 = QtWidgets.QPushButton("Button 1")
+		# self.layout.addWidget(self.button1)
 
 		# self.button2 = QtWidgets.QPushButton("Button 2")
 		# self.layout.addWidget(self.button2)
@@ -139,6 +177,9 @@ class EditorMesh(QtWidgets.QWidget):
 		super(EditorMesh, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
+
+		self.label = QtWidgets.QLabel("Attribute Editor:")
+		self.layout.addWidget(self.label)
 
 		self.button1 = QtWidgets.QPushButton("Button 1")
 		self.layout.addWidget(self.button1)
@@ -154,6 +195,9 @@ class EditorSplit(QtWidgets.QWidget):
 		super(EditorSplit, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
+
+		self.label = QtWidgets.QLabel("Attribute Editor:")
+		self.layout.addWidget(self.label)
 
 		self.button1 = QtWidgets.QPushButton("Button 1")
 		self.layout.addWidget(self.button1)
