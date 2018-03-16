@@ -1,7 +1,7 @@
 from Qt import QtCore, QtWidgets
 import nodz_main
-from DerivationTree import NodeType
-from DerivationTree import Node
+from Graph import NodeType
+from Graph import Node
 from GUI import GUI
 from Controller import Controller
 

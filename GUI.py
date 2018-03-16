@@ -5,16 +5,20 @@ import json
 from Qt import QtGui, QtCore, QtWidgets
 import nodz_main
 
-from DerivationTree import NodeType
+from Graph import NodeType
 
 class GUI(QtWidgets.QMainWindow):
 
-	def __init__(self, type, nodz):
+	controller = None
+
+	def __init__(self, type, nodz, controller):
 		"""
 		Initialize the graphics view.
 
 		"""
 		super(GUI, self).__init__()
+
+		self.controller = controller
 
 		self.layout = QtWidgets.QHBoxLayout(self)
 
@@ -36,7 +40,7 @@ class GUI(QtWidgets.QMainWindow):
 
 		self.editorWidget.setCurrentIndex(3)
 
-		self.nodePickerWidget = NodePickerWidget(self)
+		self.nodePickerWidget = NodePickerWidget(self, self.controller)
 		self.layout.addWidget(self.nodePickerWidget)
 
 		self.nodzWidget = nodz
@@ -65,7 +69,7 @@ class GUI(QtWidgets.QMainWindow):
 
 class NodePickerWidget(QtWidgets.QWidget):
 
-	def __init__(self, parent):
+	def __init__(self, parent, controller):
 		super(NodePickerWidget, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
@@ -74,6 +78,7 @@ class NodePickerWidget(QtWidgets.QWidget):
 		self.layout.addWidget(self.label)
 
 		self.button1 = QtWidgets.QPushButton("Translate")
+		self.button1.clicked.connect(lambda: controller.addNode(NodeType.translate))
 		self.layout.addWidget(self.button1)
 
 		self.button2 = QtWidgets.QPushButton("Rotate")
