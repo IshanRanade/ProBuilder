@@ -31,9 +31,11 @@ def on_nodeSelected(node):
 
     # currentSelectedNode = node
 
-    # gui.changeWidget(nodzToNode[node].nodeType)
+    if node is not None:
+        gui.changeEditorWidgetLayout(nodzToNode[node].nodeType)
+        gui.update()
 
-    print 'node selected : ', node
+        print 'node selected : ', node
 
 # Graph
 @QtCore.Slot()

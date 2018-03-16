@@ -17,10 +17,27 @@ class GUI(QtWidgets.QMainWindow):
 		super(GUI, self).__init__()
 
 		self.layout = QtWidgets.QVBoxLayout(self)
-		self.layout.addWidget(WidgetSplit(self))
-		self.layout.addWidget(WidgetSplit(self))
 
-		#self.nodz = nodz_main.Nodz(self)
+		self.editorTranslate = EditorTranslate(self)
+		self.editorRotate = EditorRotate(self)
+		self.editorScale = EditorScale(self)
+		self.editorInitial = EditorInitial(self)
+		self.editorMesh = EditorMesh(self)
+		self.editorSplit = EditorSplit(self)
+
+		self.editorWidget = QtWidgets.QStackedWidget(self)
+		self.editorWidget.addWidget(self.editorTranslate) #0
+		self.editorWidget.addWidget(self.editorRotate)    #1
+		self.editorWidget.addWidget(self.editorScale)     #2
+		self.editorWidget.addWidget(self.editorInitial)   #3
+		self.editorWidget.addWidget(self.editorMesh)      #4
+		self.editorWidget.addWidget(self.editorSplit)     #5
+		self.layout.addWidget(self.editorWidget)
+
+		self.nodePickerWidget = NodePickerWidget(self)
+		self.layout.addWidget(self.nodePickerWidget)
+
+		self.nodzWidget = nodz
 		self.layout.addWidget(nodz)
 
 		self.window = QtWidgets.QWidget(self)
@@ -30,29 +47,39 @@ class GUI(QtWidgets.QMainWindow):
 
 		self.setWindowTitle("ProBuilder")
 
-
-	def changeWidget(self, nodeType):
-		self.setWindowTitle(NodeType.getString(nodeType))
-
+	def changeEditorWidgetLayout(self, nodeType):
 		if nodeType == NodeType.init:
-			self.form_widget = WidgetInitial(self)
+			self.editorWidget.setCurrentIndex(3)
 		elif nodeType == NodeType.translate:
-			self.form_widget = WidgetTranslate(self)
+			self.editorWidget.setCurrentIndex(0)
 		elif nodeType == NodeType.rotate:
-			self.form_widget = WidgetRotate(self)
+			self.editorWidget.setCurrentIndex(1)
 		elif nodeType == NodeType.scale:
-			self.form_widget = WidgetScale(self)
+			self.editorWidget.setCurrentIndex(2)
 		elif nodeType == NodeType.split:
-			self.form_widget = WidgetSplit(self)
+			self.editorWidget.setCurrentIndex(5)
 		elif nodeType == NodeType.mesh:
-			self.form_widget = WidgetMesh(self)
+			self.editorWidget.setCurrentIndex(4)
 
-		self.setCentralWidget(self.form_widget)
-
-class WidgetSplit(QtWidgets.QWidget):
+class NodePickerWidget(QtWidgets.QWidget):
 
 	def __init__(self, parent):
-		super(WidgetSplit, self).__init__(parent)
+		super(NodePickerWidget, self).__init__(parent)
+
+		self.layout = QtWidgets.QVBoxLayout(self)
+
+		# self.button1 = QtWidgets.QPushButton("Button 1")
+		# self.layout.addWidget(self.button1)
+
+		# self.button2 = QtWidgets.QPushButton("Button 2")
+		# self.layout.addWidget(self.button2)
+
+		self.setLayout(self.layout)
+
+class EditorTranslate(QtWidgets.QWidget):
+
+	def __init__(self, parent):
+		super(EditorTranslate, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
@@ -64,10 +91,22 @@ class WidgetSplit(QtWidgets.QWidget):
 
 		self.setLayout(self.layout)
 
-class WidgetTranslate(QtWidgets.QWidget):
+class EditorRotate(QtWidgets.QWidget):
 
 	def __init__(self, parent):
-		super(WidgetTranslate, self).__init__(parent)
+		super(EditorRotate, self).__init__(parent)
+
+		self.layout = QtWidgets.QVBoxLayout(self)
+
+		self.button1 = QtWidgets.QPushButton("Button 1")
+		self.layout.addWidget(self.button1)
+
+		self.setLayout(self.layout)
+
+class EditorScale(QtWidgets.QWidget):
+
+	def __init__(self, parent):
+		super(EditorScale, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
@@ -79,10 +118,25 @@ class WidgetTranslate(QtWidgets.QWidget):
 
 		self.setLayout(self.layout)
 
-class WidgetRotate(QtWidgets.QWidget):
+class EditorInitial(QtWidgets.QWidget):
 
 	def __init__(self, parent):
-		super(WidgetRotate, self).__init__(parent)
+		super(EditorInitial, self).__init__(parent)
+
+		self.layout = QtWidgets.QVBoxLayout(self)
+
+		self.button1 = QtWidgets.QPushButton("Button 1")
+		self.layout.addWidget(self.button1)
+
+		# self.button2 = QtWidgets.QPushButton("Button 2")
+		# self.layout.addWidget(self.button2)
+
+		self.setLayout(self.layout)
+
+class EditorMesh(QtWidgets.QWidget):
+
+	def __init__(self, parent):
+		super(EditorMesh, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
@@ -94,40 +148,10 @@ class WidgetRotate(QtWidgets.QWidget):
 
 		self.setLayout(self.layout)
 
-class WidgetScale(QtWidgets.QWidget):
+class EditorSplit(QtWidgets.QWidget):
 
 	def __init__(self, parent):
-		super(WidgetScale, self).__init__(parent)
-
-		self.layout = QtWidgets.QVBoxLayout(self)
-
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
-
-		self.button2 = QtWidgets.QPushButton("Button 2")
-		self.layout.addWidget(self.button2)
-
-		self.setLayout(self.layout)
-
-class WidgetInitial(QtWidgets.QWidget):
-
-	def __init__(self, parent):
-		super(WidgetInitial, self).__init__(parent)
-
-		self.layout = QtWidgets.QVBoxLayout(self)
-
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
-
-		self.button2 = QtWidgets.QPushButton("Button 2")
-		self.layout.addWidget(self.button2)
-
-		self.setLayout(self.layout)
-
-class WidgetMesh(QtWidgets.QWidget):
-
-	def __init__(self, parent):
-		super(WidgetMesh, self).__init__(parent)
+		super(EditorSplit, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
