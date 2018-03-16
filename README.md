@@ -5,9 +5,14 @@ The following code will first delete all geometry in the scene and then run the 
 
 
 ```python
-import maya.cmds
-import maya.mel
+import maya.cmds as cmds
+import maya.mel as mel
 import sys
+
+transforms = cmds.ls(tr=True)
+polyMeshes = cmds.filterExpand(transforms, sm=12)
+cmds.select(polyMeshes, r=True)
+cmds.delete()
 
 probuilderPath = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder'
 if probuilderPath not in sys.path:
