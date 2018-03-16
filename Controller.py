@@ -18,17 +18,17 @@ class Controller(object):
 
 		self.nodzToNode = {}
 
-		root = Node(NodeType.init, self.nodz, self.nodzToNode)
-		root.addChild(NodeType.translate, self.nodz, self.nodzToNode)
+		self.root = Node(NodeType.init, self.nodz, self.nodzToNode)
+		self.root.addChild(NodeType.translate, self.nodz, self.nodzToNode)
 
-		gui = GUI(NodeType.init, self.nodz)
-		gui.show()
+		self.gui = GUI(NodeType.init, self.nodz)
+		self.gui.show()
+
+		self.nodz.signal_NodeSelected.connect(self.nodeSelected)
 
 	def nodeSelected(self, node):
 		self.currentSelectedNode = node
 
-		if self.node is not None:
+		if node is not None:
 			self.gui.changeEditorWidgetLayout(self.nodzToNode[node].nodeType)
 			self.gui.update()
-
-			print 'node selected : ', node
