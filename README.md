@@ -9,11 +9,6 @@ import maya.cmds
 import maya.mel
 import sys
 
-transforms = maya.cmds.ls(tr=True)
-polyMeshes = maya.cmds.filterExpand(transforms, sm=12)
-maya.cmds.select(polyMeshes, r=True)
-maya.cmds.delete()
-
 probuilderPath = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder'
 if probuilderPath not in sys.path:
     sys.path.append(probuilderPath)

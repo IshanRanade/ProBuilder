@@ -105,6 +105,13 @@ class Graph(object):
 		self.nodzToNode[srcNode].children.append(self.nodzToNode[destNode])
 
 	def generateMesh(self):
+		# First delete all the existing geometry in the scene
+		transforms = cmds.ls(tr=True)
+		polyMeshes = cmds.filterExpand(transforms, sm=12)
+		cmds.select(polyMeshes, r=True)
+		cmds.delete()
+
+		# Now generate the mesh from the tree
 		cmds.polyCube( sx=10, sy=15, sz=5, h=20 )
 
 
