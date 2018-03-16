@@ -82,15 +82,19 @@ class NodePickerWidget(QtWidgets.QWidget):
 		self.layout.addWidget(self.button1)
 
 		self.button2 = QtWidgets.QPushButton("Rotate")
+		self.button2.clicked.connect(lambda: controller.addNode(NodeType.rotate))
 		self.layout.addWidget(self.button2)
 
 		self.button3 = QtWidgets.QPushButton("Scale")
+		self.button3.clicked.connect(lambda: controller.addNode(NodeType.scale))
 		self.layout.addWidget(self.button3)
 
 		self.button4 = QtWidgets.QPushButton("Split")
+		self.button4.clicked.connect(lambda: controller.addNode(NodeType.split))
 		self.layout.addWidget(self.button4)
 
 		self.button5 = QtWidgets.QPushButton("Mesh")
+		self.button5.clicked.connect(lambda: controller.addNode(NodeType.mesh))
 		self.layout.addWidget(self.button5)
 
 		self.setLayout(self.layout)

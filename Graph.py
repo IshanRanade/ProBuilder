@@ -100,5 +100,3 @@ class Graph(object):
 			self.nodes.add(MeshNode(self.nodz, self.nodzToNode))
 
 
-
-
