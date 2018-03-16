@@ -99,8 +99,6 @@ class Graph(object):
 		elif(nodeType == NodeType.mesh):
 			self.nodes.add(MeshNode(self.nodz, self.nodzToNode))
 
-		print "done"
-
 
 
 

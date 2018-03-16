@@ -501,29 +501,25 @@ class Nodz(QtWidgets.QGraphicsView):
 
         """
         # Check for name clashes
-        if name in self.scene().nodes.keys():
-            print 'A node with the same name already exists : {0}'.format(name)
-            print 'Node creation aborted !'
-            return
-        else:
-            nodeItem = NodeItem(name=name, alternate=alternate, preset=preset,
-                                config=self.config)
 
-            # Store node in scene.
-            self.scene().nodes[name] = nodeItem
+        nodeItem = NodeItem(name=name, alternate=alternate, preset=preset,
+                            config=self.config)
 
-            if not position:
-                # Get the center of the view.
-                position = self.mapToScene(self.viewport().rect().center())
+        # Store node in scene.
+        self.scene().nodes.add(nodeItem)
 
-            # Set node position.
-            self.scene().addItem(nodeItem)
-            nodeItem.setPos(position - nodeItem.nodeCenter)
+        if not position:
+            # Get the center of the view.
+            position = self.mapToScene(self.viewport().rect().center())
 
-            # Emit signal.
-            self.signal_NodeCreated.emit(name)
+        # Set node position.
+        self.scene().addItem(nodeItem)
+        nodeItem.setPos(position - nodeItem.nodeCenter)
 
-            return nodeItem
+        # Emit signal.
+        self.signal_NodeCreated.emit(name)
+
+        return nodeItem
 
     def deleteNode(self, node):
         """
@@ -533,65 +529,16 @@ class Nodz(QtWidgets.QGraphicsView):
         :param node: The node instance that you want to delete.
 
         """
-        if not node in self.scene().nodes.values():
+        if not node in self.scene().nodes:
             print 'Node object does not exist !'
             print 'Node deletion aborted !'
             return
 
-        if node in self.scene().nodes.values():
-            nodeName = node.name
+        if node in self.scene().nodes:
             node._remove()
 
             # Emit signal.
-            self.signal_NodeDeleted.emit([nodeName])
-
-    def editNode(self, node, newName=None):
-        """
-        Rename an existing node.
-
-        :type  node: class.
-        :param node: The node instance that you want to delete.
-
-        :type  newName: str.
-        :param newName: The new name for the given node.
-
-        """
-        if not node in self.scene().nodes.values():
-            print 'Node object does not exist !'
-            print 'Node edition aborted !'
-            return
-
-        oldName = node.name
-
-        if newName != None:
-            # Check for name clashes
-            if newName in self.scene().nodes.keys():
-                print 'A node with the same name already exists : {0}'.format(newName)
-                print 'Node edition aborted !'
-                return
-            else:
-                node.name = newName
-
-        # Replace node data.
-        self.scene().nodes[newName] = self.scene().nodes[oldName]
-        self.scene().nodes.pop(oldName)
-
-        # Store new node name in the connections
-        if node.sockets:
-            for socket in node.sockets.values():
-                for connection in socket.connections:
-                    connection.socketNode = newName
-
-        if node.plugs:
-            for plug in node.plugs.values():
-                for connection in plug.connections:
-                    connection.plugNode = newName
-
-        node.update()
-
-        # Emit signal.
-        self.signal_NodeEdited.emit(oldName, newName)
-
+            self.signal_NodeDeleted.emit(node)
 
     # ATTRS
     def createAttribute(self, node, name='default', index=-1, preset='attr_default', plug=True, socket=True, dataType=None):
@@ -625,7 +572,7 @@ class Nodz(QtWidgets.QGraphicsView):
                          type while performing a connection.
 
         """
-        if not node in self.scene().nodes.values():
+        if not node in self.scene().nodes:
             print 'Node object does not exist !'
             print 'Attribute creation aborted !'
             return
@@ -651,7 +598,7 @@ class Nodz(QtWidgets.QGraphicsView):
         :param index: The index of the attribute in the node.
 
         """
-        if not node in self.scene().nodes.values():
+        if not node in self.scene().nodes:
             print 'Node object does not exist !'
             print 'Attribute deletion aborted !'
             return
@@ -659,7 +606,7 @@ class Nodz(QtWidgets.QGraphicsView):
         node._deleteAttribute(index)
 
         # Emit signal.
-        self.signal_AttrDeleted.emit(node.name, index)
+        self.signal_AttrDeleted.emit(node, index)
 
     def editAttribute(self, node, index, newName=None, newIndex=None):
         """
@@ -678,7 +625,7 @@ class Nodz(QtWidgets.QGraphicsView):
         :param newIndex: The index for the given attribute.
 
         """
-        if not node in self.scene().nodes.values():
+        if not node in self.scene().nodes:
             print 'Node object does not exist !'
             print 'Attribute creation aborted !'
             return
@@ -756,135 +703,6 @@ class Nodz(QtWidgets.QGraphicsView):
         else:
             self.signal_AttrEdited.emit(node.name, index, index)
 
-
-    # GRAPH
-    def saveGraph(self, filePath='path'):
-        """
-        Get all the current graph infos and store them in a .json file
-        at the given location.
-
-        :type  filePath: str.
-        :param filePath: The path where you want to save your graph at.
-
-        """
-        data = dict()
-
-        # Store nodes data.
-        data['NODES'] = dict()
-
-        nodes = self.scene().nodes.keys()
-        for node in nodes:
-            nodeInst = self.scene().nodes[node]
-            preset = nodeInst.nodePreset
-            nodeAlternate = nodeInst.alternate
-
-            data['NODES'][node] = {'preset': preset,
-                                   'position': [nodeInst.pos().x(), nodeInst.pos().y()],
-                                   'alternate': nodeAlternate,
-                                   'attributes': []}
-
-            attrs = nodeInst.attrs
-            for attr in attrs:
-                attrData = nodeInst.attrsData[attr]
-
-                # serialize dataType if needed.
-                if isinstance(attrData['dataType'], type):
-                    attrData['dataType'] = str(attrData['dataType'])
-
-                data['NODES'][node]['attributes'].append(attrData)
-
-
-        # Store connections data.
-        data['CONNECTIONS'] = self.evaluateGraph()
-
-
-        # Save data.
-        try:
-            utils._saveData(filePath=filePath, data=data)
-        except:
-            print 'Invalid path : {0}'.format(filePath)
-            print 'Save aborted !'
-            return False
-
-        # Emit signal.
-        self.signal_GraphSaved.emit()
-
-    def loadGraph(self, filePath='path'):
-        """
-        Get all the stored info from the .json file at the given location
-        and recreate the graph as saved.
-
-        :type  filePath: str.
-        :param filePath: The path where you want to load your graph from.
-
-        """
-        # Load data.
-        if os.path.exists(filePath):
-            data = utils._loadData(filePath=filePath)
-        else:
-            print 'Invalid path : {0}'.format(filePath)
-            print 'Load aborted !'
-            return False
-
-        # Apply nodes data.
-        nodesData = data['NODES']
-        nodesName = nodesData.keys()
-
-        for name in nodesName:
-            preset = nodesData[name]['preset']
-            position = nodesData[name]['position']
-            position = QtCore.QPointF(position[0], position[1])
-            alternate = nodesData[name]['alternate']
-
-            node = self.createNode(name=name,
-                                   preset=preset,
-                                   position=position,
-                                   alternate=alternate)
-
-            # Apply attributes data.
-            attrsData = nodesData[name]['attributes']
-
-            for attrData in attrsData:
-                index = attrsData.index(attrData)
-                name = attrData['name']
-                plug = attrData['plug']
-                socket = attrData['socket']
-                preset = attrData['preset']
-                dataType = attrData['dataType']
-
-                # un-serialize data type if needed
-                if (isinstance(dataType, unicode) and dataType.find('<') == 0):
-                    dataType = eval(str(dataType.split('\'')[1]))
-
-                self.createAttribute(node=node,
-                                     name=name,
-                                     index=index,
-                                     preset=preset,
-                                     plug=plug,
-                                     socket=socket,
-                                     dataType=dataType)
-
-
-        # Apply connections data.
-        connectionsData = data['CONNECTIONS']
-
-        for connection in connectionsData:
-            source = connection[0]
-            sourceNode = source.split('.')[0]
-            sourceAttr = source.split('.')[1]
-
-            target = connection[1]
-            targetNode = target.split('.')[0]
-            targetAttr = target.split('.')[1]
-
-            self.createConnection(sourceNode, sourceAttr,
-                                  targetNode, targetAttr)
-
-        self.scene().update()
-
-        # Emit signal.
-        self.signal_GraphLoaded.emit()
-
     def createConnection(self, sourceNode, sourceAttr, targetNode, targetAttr):
         """
         Create a manual connection.
@@ -948,7 +766,7 @@ class Nodz(QtWidgets.QGraphicsView):
 
         """
         self.scene().clear()
-        self.scene().nodes = dict()
+        self.scene().nodes = set()
 
         # Emit signal.
         self.signal_GraphCleared.emit()
@@ -977,7 +795,7 @@ class NodeScene(QtWidgets.QGraphicsScene):
         self.gridSize = parent.config['grid_size']
 
         # Nodes storage.
-        self.nodes = dict()
+        self.nodes = set()
 
     def dragEnterEvent(self, event):
         """
@@ -1412,7 +1230,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
 
         """
         nodes = self.scene().nodes
-        for node in nodes.values():
+        for node in nodes:
             node.setZValue(1)
 
         for item in self.scene().items():
@@ -1858,10 +1676,10 @@ class SocketItem(SlotItem):
         Connect to the given plug item.
 
         """
-        if len(self.connected_slots) > 0:
-            # Already connected.
-            self.connections[0]._remove()
-            self.connected_slots = list()
+        # if len(self.connected_slots) > 0:
+        #     # Already connected.
+        #     self.connections[0]._remove()
+        #     self.connected_slots = list()
 
         # Populate connection.
         connection.plugItem = plug_item
