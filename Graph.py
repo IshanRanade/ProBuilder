@@ -1,4 +1,6 @@
 import numpy
+import maya.cmds as cmds
+import maya.mel as mel
 
 class NodeType(object):
 	translate = 0
@@ -98,5 +100,12 @@ class Graph(object):
 			self.nodes.add(SplitNode(self.nodz, self.nodzToNode))
 		elif(nodeType == NodeType.mesh):
 			self.nodes.add(MeshNode(self.nodz, self.nodzToNode))
+
+	def createEdge(self, srcNode, destNode):
+		self.nodzToNode[srcNode].children.append(self.nodzToNode[destNode])
+
+	def generateMesh(self):
+		cmds.polyCube( sx=10, sy=15, sz=5, h=20 )
+
 
 

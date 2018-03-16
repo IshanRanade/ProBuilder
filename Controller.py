@@ -22,6 +22,7 @@ class Controller(object):
 		self.gui.show()
 
 		self.nodz.signal_NodeSelected.connect(self.nodeSelected)
+		self.nodz.signal_SocketConnected.connect(self.socketConnected)
 
 	def nodeSelected(self, nodzNode):
 		if nodzNode is not None:
@@ -31,5 +32,12 @@ class Controller(object):
 		else:
 			self.currentSelectedNode = None
 
+	def socketConnected(self, srcNode, srcPlugName, destNode, dstSocketName):
+		self.graph.createEdge(srcNode, destNode)
+		print 'connected src: "{0}" at "{1}" to dst: "{2}" at "{3}"'.format(srcNode, srcPlugName, destNode, dstSocketName)
+
 	def addNode(self, nodeType):
 		self.graph.addNode(nodeType)
+
+	def generateMesh(self):
+		self.graph.generateMesh()

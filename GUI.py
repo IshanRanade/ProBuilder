@@ -97,6 +97,10 @@ class NodePickerWidget(QtWidgets.QWidget):
 		self.button5.clicked.connect(lambda: controller.addNode(NodeType.mesh))
 		self.layout.addWidget(self.button5)
 
+		self.button6 = QtWidgets.QPushButton("Generate")
+		self.button6.clicked.connect(controller.generateMesh)
+		self.layout.addWidget(self.button6)
+
 		self.setLayout(self.layout)
 
 class EditorTranslate(QtWidgets.QWidget):

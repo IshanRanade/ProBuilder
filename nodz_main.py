@@ -725,9 +725,9 @@ class Nodz(QtWidgets.QGraphicsView):
 
         connection = ConnectionItem(plug.center(), socket.center(), plug, socket)
 
-        connection.plugNode = plug.parentItem().name
+        connection.plugNode = plug.parentItem()
         connection.plugAttr = plug.attribute
-        connection.socketNode = socket.parentItem().name
+        connection.socketNode = socket.parentItem()
         connection.socketAttr = socket.attribute
 
         plug.connect(socket, connection)
@@ -1102,7 +1102,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
         in the process
 
         """
-        self.scene().nodes.pop(self.name)
+        self.scene().nodes.remove(self)
 
         # Remove all sockets connections.
         for socket in self.sockets.values():
@@ -1556,7 +1556,7 @@ class PlugItem(SlotItem):
         """
         # Populate connection.
         connection.socketItem = socket_item
-        connection.plugNode = self.parentItem().name
+        connection.plugNode = self.parentItem()
         connection.plugAttr = self.attribute
 
         # Add socket to connected slots.
@@ -1683,7 +1683,7 @@ class SocketItem(SlotItem):
 
         # Populate connection.
         connection.plugItem = plug_item
-        connection.socketNode = self.parentItem().name
+        connection.socketNode = self.parentItem()
         connection.socketAttr = self.attribute
 
         # Add plug to connected slots.
