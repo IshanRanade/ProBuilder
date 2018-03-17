@@ -4,6 +4,7 @@ import json
 
 from Qt import QtGui, QtCore, QtWidgets
 import nodz_main
+import Qt
 
 from Graph import NodeType
 
@@ -22,6 +23,10 @@ class GUI(QtWidgets.QMainWindow):
 
 		self.layout = QtWidgets.QHBoxLayout(self)
 
+		self.nodePickerWidget = NodePickerWidget(self, self.controller)
+		self.layout.addWidget(self.nodePickerWidget)
+
+		self.editor = Editor(self)
 		self.editorTranslate = EditorTranslate(self)
 		self.editorRotate = EditorRotate(self)
 		self.editorScale = EditorScale(self)
@@ -36,12 +41,10 @@ class GUI(QtWidgets.QMainWindow):
 		self.editorWidget.addWidget(self.editorInitial)   #3
 		self.editorWidget.addWidget(self.editorMesh)      #4
 		self.editorWidget.addWidget(self.editorSplit)     #5
+		self.editorWidget.addWidget(self.editor)     #6
 		self.layout.addWidget(self.editorWidget)
 
-		self.editorWidget.setCurrentIndex(3)
-
-		self.nodePickerWidget = NodePickerWidget(self, self.controller)
-		self.layout.addWidget(self.nodePickerWidget)
+		self.editorWidget.setCurrentIndex(6)
 
 		self.nodzWidget = nodz
 		self.layout.addWidget(nodz)
@@ -72,9 +75,14 @@ class NodePickerWidget(QtWidgets.QWidget):
 	def __init__(self, parent, controller):
 		super(NodePickerWidget, self).__init__(parent)
 
+		#self.setStyleSheet("background-color: black;")
+
 		self.layout = QtWidgets.QVBoxLayout(self)
+		self.layout.setAlignment(QtCore.Qt.AlignTop)
 
 		self.label = QtWidgets.QLabel("Create Node:")
+		self.label.setMinimumWidth(150)
+		self.label.setAlignment(0x0004)
 		self.layout.addWidget(self.label)
 
 		self.button1 = QtWidgets.QPushButton("Translate")
@@ -103,63 +111,91 @@ class NodePickerWidget(QtWidgets.QWidget):
 
 		self.setLayout(self.layout)
 
-class EditorTranslate(QtWidgets.QWidget):
+class Editor(QtWidgets.QWidget):
+
+	def __init__(self, parent):
+		super(Editor, self).__init__(parent)
+
+		self.layout = QtWidgets.QVBoxLayout(self)
+		self.layout.setAlignment(QtCore.Qt.AlignTop)
+
+		self.label = QtWidgets.QLabel("Attribute Editor:")
+		self.label.setMinimumWidth(150)
+		self.label.setAlignment(0x0004)
+		self.layout.addWidget(self.label)
+
+		self.setLayout(self.layout)
+
+class EditorTranslate(Editor):
 
 	def __init__(self, parent):
 		super(EditorTranslate, self).__init__(parent)
 
-		self.layout = QtWidgets.QVBoxLayout(self)
+		self.lotX = QtWidgets.QHBoxLayout(self)
+		self.lotX.addWidget(QtWidgets.QLabel("Translate X: "))
+		self.lotX.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotX)
 
-		self.label = QtWidgets.QLabel("Attribute Editor:")
-		self.layout.addWidget(self.label)
+		self.lotY = QtWidgets.QHBoxLayout(self)
+		self.lotY.addWidget(QtWidgets.QLabel("Translate Y: "))
+		self.lotY.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotY)
 
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
-
-		self.button2 = QtWidgets.QPushButton("Button 2")
-		self.layout.addWidget(self.button2)
+		self.lotZ = QtWidgets.QHBoxLayout(self)
+		self.lotZ.addWidget(QtWidgets.QLabel("Translate Z: "))
+		self.lotZ.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotZ)
 
 		self.setLayout(self.layout)
 
-class EditorRotate(QtWidgets.QWidget):
+class EditorRotate(Editor):
 
 	def __init__(self, parent):
 		super(EditorRotate, self).__init__(parent)
 
-		self.layout = QtWidgets.QVBoxLayout(self)
+		self.lotX = QtWidgets.QHBoxLayout(self)
+		self.lotX.addWidget(QtWidgets.QLabel("Rotate X: "))
+		self.lotX.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotX)
 
-		self.label = QtWidgets.QLabel("Attribute Editor:")
-		self.layout.addWidget(self.label)
+		self.lotY = QtWidgets.QHBoxLayout(self)
+		self.lotY.addWidget(QtWidgets.QLabel("Rotate Y: "))
+		self.lotY.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotY)
 
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
+		self.lotZ = QtWidgets.QHBoxLayout(self)
+		self.lotZ.addWidget(QtWidgets.QLabel("Rotate Z: "))
+		self.lotZ.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotZ)
 
 		self.setLayout(self.layout)
 
-class EditorScale(QtWidgets.QWidget):
+class EditorScale(Editor):
 
 	def __init__(self, parent):
 		super(EditorScale, self).__init__(parent)
 
-		self.layout = QtWidgets.QVBoxLayout(self)
+		self.lotX = QtWidgets.QHBoxLayout(self)
+		self.lotX.addWidget(QtWidgets.QLabel("Scale X: "))
+		self.lotX.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotX)
 
-		self.label = QtWidgets.QLabel("Attribute Editor:")
-		self.layout.addWidget(self.label)
+		self.lotY = QtWidgets.QHBoxLayout(self)
+		self.lotY.addWidget(QtWidgets.QLabel("Scale Y: "))
+		self.lotY.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotY)
 
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
-
-		self.button2 = QtWidgets.QPushButton("Button 2")
-		self.layout.addWidget(self.button2)
+		self.lotZ = QtWidgets.QHBoxLayout(self)
+		self.lotZ.addWidget(QtWidgets.QLabel("Scale Z: "))
+		self.lotZ.addWidget(QtWidgets.QLineEdit())
+		self.layout.addLayout(self.lotZ)
 
 		self.setLayout(self.layout)
 
-class EditorInitial(QtWidgets.QWidget):
+class EditorInitial(Editor):
 
 	def __init__(self, parent):
 		super(EditorInitial, self).__init__(parent)
-
-		self.layout = QtWidgets.QVBoxLayout(self)
 
 		self.lotX = QtWidgets.QHBoxLayout(self)
 		self.lotX.addWidget(QtWidgets.QLabel("Lot X: "))
@@ -175,12 +211,6 @@ class EditorInitial(QtWidgets.QWidget):
 		self.lotZ.addWidget(QtWidgets.QLabel("Lot Z: "))
 		self.lotZ.addWidget(QtWidgets.QLineEdit())
 		self.layout.addLayout(self.lotZ)
-
-		# self.button1 = QtWidgets.QPushButton("Button 1")
-		# self.layout.addWidget(self.button1)
-
-		# self.button2 = QtWidgets.QPushButton("Button 2")
-		# self.layout.addWidget(self.button2)
 
 		self.setLayout(self.layout)
 

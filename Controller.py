@@ -34,7 +34,6 @@ class Controller(object):
 
 	def socketConnected(self, srcNode, srcPlugName, destNode, dstSocketName):
 		self.graph.createEdge(srcNode, destNode)
-		print 'connected src: "{0}" at "{1}" to dst: "{2}" at "{3}"'.format(srcNode, srcPlugName, destNode, dstSocketName)
 
 	def addNode(self, nodeType):
 		self.graph.addNode(nodeType)

@@ -104,6 +104,18 @@ class Graph(object):
 	def createEdge(self, srcNode, destNode):
 		self.nodzToNode[srcNode].children.append(self.nodzToNode[destNode])
 
+	def printGraph(self):
+		queue = [self.root]
+
+		while len(queue) > 0:
+			curr = queue.pop()
+
+			for child in curr.children:
+				print curr.nodzNode.name + " -> " + child.nodzNode.name
+
+				queue.append(child)
+
+
 	def generateMesh(self):
 		# First delete all the existing geometry in the scene
 		transforms = cmds.ls(tr=True)
