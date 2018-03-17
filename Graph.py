@@ -43,23 +43,55 @@ class Node(object):
 
 class InitialNode(Node):
 
+	lotX = None
+	lotY = None
+	lotZ = None
+
 	def __init__(self, nodz, nodzToNode):
 		super(InitialNode, self).__init__(NodeType.init, nodz, nodzToNode)
 
+		self.lotX = 0
+		self.lotY = 0
+		self.lotZ = 0
+
 class TranslateNode(Node):
+
+	translateX = None
+	translateY = None
+	translateZ = None
 
 	def __init__(self, nodz, nodzToNode):
 		super(TranslateNode, self).__init__(NodeType.translate, nodz, nodzToNode)
 
+		self.translateX = 0
+		self.translateY = 0
+		self.translateZ = 0
+
 class RotateNode(Node):
+
+	rotateX = None
+	rotateY = None
+	rotateZ = None
 
 	def __init__(self, nodz, nodzToNode):
 		super(RotateNode, self).__init__(NodeType.rotate, nodz, nodzToNode)
 
+		self.rotateX = 0
+		self.rotateY = 0
+		self.rotateZ = 0
+
 class ScaleNode(Node):
+
+	scaleX = None
+	scaleY = None
+	scaleZ = None
 
 	def __init__(self, nodz, nodzToNode):
 		super(ScaleNode, self).__init__(NodeType.scale, nodz, nodzToNode)
+
+		self.scaleX = 0
+		self.scaleY = 0
+		self.scaleZ = 0
 
 class SplitNode(Node):
 
@@ -122,6 +154,8 @@ class Graph(object):
 		polyMeshes = cmds.filterExpand(transforms, sm=12)
 		cmds.select(polyMeshes, r=True)
 		cmds.delete()
+
+		self.printGraph()
 
 		# Now generate the mesh from the tree
 		cmds.polyCube( sx=10, sy=15, sz=5, h=20 )

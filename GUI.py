@@ -12,7 +12,7 @@ class GUI(QtWidgets.QMainWindow):
 
 	controller = None
 
-	def __init__(self, type, nodz, controller):
+	def __init__(self, type, controller):
 		"""
 		Initialize the graphics view.
 
@@ -22,6 +22,9 @@ class GUI(QtWidgets.QMainWindow):
 		self.controller = controller
 
 		self.layout = QtWidgets.QHBoxLayout(self)
+
+		self.generateWidget = Generate(self, self.controller)
+		self.layout.addWidget(self.generateWidget)
 
 		self.nodePickerWidget = NodePickerWidget(self, self.controller)
 		self.layout.addWidget(self.nodePickerWidget)
@@ -41,13 +44,14 @@ class GUI(QtWidgets.QMainWindow):
 		self.editorWidget.addWidget(self.editorInitial)   #3
 		self.editorWidget.addWidget(self.editorMesh)      #4
 		self.editorWidget.addWidget(self.editorSplit)     #5
-		self.editorWidget.addWidget(self.editor)     #6
+		self.editorWidget.addWidget(self.editor)          #6
 		self.layout.addWidget(self.editorWidget)
 
 		self.editorWidget.setCurrentIndex(6)
 
-		self.nodzWidget = nodz
-		self.layout.addWidget(nodz)
+		self.nodzWidget = nodz_main.Nodz(self)
+		self.nodzWidget.initialize()
+		self.layout.addWidget(self.nodzWidget)
 
 		self.window = QtWidgets.QWidget(self)
 		self.window.setLayout(self.layout)
@@ -82,7 +86,7 @@ class NodePickerWidget(QtWidgets.QWidget):
 
 		self.label = QtWidgets.QLabel("Create Node:")
 		self.label.setMinimumWidth(150)
-		self.label.setAlignment(0x0004)
+		self.label.setAlignment(QtCore.Qt.AlignHCenter)
 		self.layout.addWidget(self.label)
 
 		self.button1 = QtWidgets.QPushButton("Translate")
@@ -105,9 +109,23 @@ class NodePickerWidget(QtWidgets.QWidget):
 		self.button5.clicked.connect(lambda: controller.addNode(NodeType.mesh))
 		self.layout.addWidget(self.button5)
 
-		self.button6 = QtWidgets.QPushButton("Generate")
-		self.button6.clicked.connect(controller.generateMesh)
-		self.layout.addWidget(self.button6)
+		self.setLayout(self.layout)
+
+class Generate(QtWidgets.QWidget):
+
+	def __init__(self, parent, controller):
+		super(Generate, self).__init__(parent)
+
+		self.layout = QtWidgets.QVBoxLayout(self)
+		self.layout.setAlignment(QtCore.Qt.AlignTop)
+
+		self.label = QtWidgets.QLabel("Create Mesh:")
+		self.label.setAlignment(QtCore.Qt.AlignHCenter)
+		self.layout.addWidget(self.label)
+
+		self.button = QtWidgets.QPushButton("Generate")
+		self.button.clicked.connect(controller.generateMesh)
+		self.layout.addWidget(self.button)
 
 		self.setLayout(self.layout)
 
@@ -120,8 +138,8 @@ class Editor(QtWidgets.QWidget):
 		self.layout.setAlignment(QtCore.Qt.AlignTop)
 
 		self.label = QtWidgets.QLabel("Attribute Editor:")
-		self.label.setMinimumWidth(150)
-		self.label.setAlignment(0x0004)
+		# self.label.setMinimumWidth(150)
+		# self.label.setMaximumWidth(150)
 		self.layout.addWidget(self.label)
 
 		self.setLayout(self.layout)
@@ -131,20 +149,26 @@ class EditorTranslate(Editor):
 	def __init__(self, parent):
 		super(EditorTranslate, self).__init__(parent)
 
-		self.lotX = QtWidgets.QHBoxLayout(self)
-		self.lotX.addWidget(QtWidgets.QLabel("Translate X: "))
-		self.lotX.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotX)
+		self.translateX = QtWidgets.QHBoxLayout(self)
+		self.translateXLabel = QtWidgets.QLabel("Translate X: ")
+		self.translateXLineEdit = QtWidgets.QLineEdit()
+		self.translateX.addWidget(self.translateXLabel)
+		self.translateX.addWidget(self.translateXLineEdit)
+		self.layout.addLayout(self.translateX)
 
-		self.lotY = QtWidgets.QHBoxLayout(self)
-		self.lotY.addWidget(QtWidgets.QLabel("Translate Y: "))
-		self.lotY.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotY)
+		self.translateY = QtWidgets.QHBoxLayout(self)
+		self.translateYLabel = QtWidgets.QLabel("Translate Y: ")
+		self.translateYLineEdit = QtWidgets.QLineEdit()
+		self.translateY.addWidget(self.translateYLabel)
+		self.translateY.addWidget(self.translateYLineEdit)
+		self.layout.addLayout(self.translateY)
 
-		self.lotZ = QtWidgets.QHBoxLayout(self)
-		self.lotZ.addWidget(QtWidgets.QLabel("Translate Z: "))
-		self.lotZ.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotZ)
+		self.translateZ = QtWidgets.QHBoxLayout(self)
+		self.translateZLabel = QtWidgets.QLabel("Translate Z: ")
+		self.translateZLineEdit = QtWidgets.QLineEdit()
+		self.translateZ.addWidget(self.translateZLabel)
+		self.translateZ.addWidget(self.translateZLineEdit)
+		self.layout.addLayout(self.translateZ)
 
 		self.setLayout(self.layout)
 
@@ -153,20 +177,26 @@ class EditorRotate(Editor):
 	def __init__(self, parent):
 		super(EditorRotate, self).__init__(parent)
 
-		self.lotX = QtWidgets.QHBoxLayout(self)
-		self.lotX.addWidget(QtWidgets.QLabel("Rotate X: "))
-		self.lotX.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotX)
+		self.rotateX = QtWidgets.QHBoxLayout(self)
+		self.rotateXLabel = QtWidgets.QLabel("Rotate X: ")
+		self.rotateXLineEdit = QtWidgets.QLineEdit()
+		self.rotateX.addWidget(self.rotateXLabel)
+		self.rotateX.addWidget(self.rotateXLineEdit)
+		self.layout.addLayout(self.rotateX)
 
-		self.lotY = QtWidgets.QHBoxLayout(self)
-		self.lotY.addWidget(QtWidgets.QLabel("Rotate Y: "))
-		self.lotY.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotY)
+		self.rotateY = QtWidgets.QHBoxLayout(self)
+		self.rotateYLabel = QtWidgets.QLabel("Rotate Y: ")
+		self.rotateYLineEdit = QtWidgets.QLineEdit()
+		self.rotateY.addWidget(self.rotateYLabel)
+		self.rotateY.addWidget(self.rotateYLineEdit)
+		self.layout.addLayout(self.rotateY)
 
-		self.lotZ = QtWidgets.QHBoxLayout(self)
-		self.lotZ.addWidget(QtWidgets.QLabel("Rotate Z: "))
-		self.lotZ.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotZ)
+		self.rotateZ = QtWidgets.QHBoxLayout(self)
+		self.rotateZLabel = QtWidgets.QLabel("Rotate Z: ")
+		self.rotateZLineEdit = QtWidgets.QLineEdit()
+		self.rotateZ.addWidget(self.rotateZLabel)
+		self.rotateZ.addWidget(self.rotateZLineEdit)
+		self.layout.addLayout(self.rotateZ)
 
 		self.setLayout(self.layout)
 
@@ -175,20 +205,26 @@ class EditorScale(Editor):
 	def __init__(self, parent):
 		super(EditorScale, self).__init__(parent)
 
-		self.lotX = QtWidgets.QHBoxLayout(self)
-		self.lotX.addWidget(QtWidgets.QLabel("Scale X: "))
-		self.lotX.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotX)
+		self.scaleX = QtWidgets.QHBoxLayout(self)
+		self.scaleXLabel = QtWidgets.QLabel("Scale X: ")
+		self.scaleXLineEdit = QtWidgets.QLineEdit()
+		self.scaleX.addWidget(self.scaleXLabel)
+		self.scaleX.addWidget(self.scaleXLineEdit)
+		self.layout.addLayout(self.scaleX)
 
-		self.lotY = QtWidgets.QHBoxLayout(self)
-		self.lotY.addWidget(QtWidgets.QLabel("Scale Y: "))
-		self.lotY.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotY)
+		self.scaleY = QtWidgets.QHBoxLayout(self)
+		self.scaleYLabel = QtWidgets.QLabel("Scale Y: ")
+		self.scaleYLineEdit = QtWidgets.QLineEdit()
+		self.scaleY.addWidget(self.scaleYLabel)
+		self.scaleY.addWidget(self.scaleYLineEdit)
+		self.layout.addLayout(self.scaleY)
 
-		self.lotZ = QtWidgets.QHBoxLayout(self)
-		self.lotZ.addWidget(QtWidgets.QLabel("Scale Z: "))
-		self.lotZ.addWidget(QtWidgets.QLineEdit())
-		self.layout.addLayout(self.lotZ)
+		self.scaleZ = QtWidgets.QHBoxLayout(self)
+		self.scaleZLabel = QtWidgets.QLabel("Scale Z: ")
+		self.scaleZLineEdit = QtWidgets.QLineEdit()
+		self.scaleZ.addWidget(self.scaleZLabel)
+		self.scaleZ.addWidget(self.scaleZLineEdit)
+		self.layout.addLayout(self.scaleZ)
 
 		self.setLayout(self.layout)
 
@@ -198,18 +234,27 @@ class EditorInitial(Editor):
 		super(EditorInitial, self).__init__(parent)
 
 		self.lotX = QtWidgets.QHBoxLayout(self)
-		self.lotX.addWidget(QtWidgets.QLabel("Lot X: "))
-		self.lotX.addWidget(QtWidgets.QLineEdit())
+		self.lotXLabel = QtWidgets.QLabel("Lot X: ")
+		self.lotXLineEdit = QtWidgets.QLineEdit()
+		self.lotXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.lotX.addWidget(self.lotXLabel)
+		self.lotX.addWidget(self.lotXLineEdit)
 		self.layout.addLayout(self.lotX)
 
 		self.lotY = QtWidgets.QHBoxLayout(self)
-		self.lotY.addWidget(QtWidgets.QLabel("Lot Y: "))
-		self.lotY.addWidget(QtWidgets.QLineEdit())
+		self.lotYLabel = QtWidgets.QLabel("Lot Y: ")
+		self.lotYLineEdit = QtWidgets.QLineEdit()
+		self.lotYLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.lotY.addWidget(self.lotYLabel)
+		self.lotY.addWidget(self.lotYLineEdit)
 		self.layout.addLayout(self.lotY)
 
 		self.lotZ = QtWidgets.QHBoxLayout(self)
-		self.lotZ.addWidget(QtWidgets.QLabel("Lot Z: "))
-		self.lotZ.addWidget(QtWidgets.QLineEdit())
+		self.lotZLabel = QtWidgets.QLabel("Lot Z: ")
+		self.lotZLineEdit = QtWidgets.QLineEdit()
+		self.lotZLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.lotZ.addWidget(self.lotZLabel)
+		self.lotZ.addWidget(self.lotZLineEdit)
 		self.layout.addLayout(self.lotZ)
 
 		self.setLayout(self.layout)
