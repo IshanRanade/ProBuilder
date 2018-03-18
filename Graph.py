@@ -1,6 +1,7 @@
-import numpy
+import numpy as np
 import maya.cmds as cmds
 import maya.mel as mel
+import LinAlg
 
 class NodeType(object):
 	translate = 0
@@ -148,7 +149,7 @@ class Graph(object):
 				attrsParent = vars(curr)
 				attrsChild = vars(child)
 
-				print ', '.join("%s: %s" % item for item in attrsParent.items()), "\n"
+				print ', '.join("%s: %s" % item for item in attrsParent.items())
 				print ', '.join("%s: %s" % item for item in attrsChild.items())
 
 				queue.append(child)
@@ -166,7 +167,34 @@ class Graph(object):
 		self.printGraph()
 
 		# Now generate the mesh from the tree
-		cmds.polyCube( sx=10, sy=15, sz=5, h=20 )
+		# cmds.polyCube()
+		# cmds.move(10,10,10)
+		# cmds.rotate(19,10,10)
+
+		self.generateMeshHelper(self.root, np.array([0,0,0]), np.array([1,0,0,0]), np.array([1,1,1]))
+
+	def generateMeshHelper(self, node, translate, rotate, scale):
+		if node.nodeType == NodeType.translate:
+			translate = np.add(translate, np.array([node.translateX, node.translateY, node.translateZ]))
+		elif node.nodeType == NodeType.rotate:
+			rotate = LinAlg.quaternion_multiply(rotate, LinAlg.quaternion_from_euler(node.rotateX, node.rotateY, node.rotateZ))
+		elif node.nodeType == NodeType.scale:
+			scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
+		elif node.nodeType == NodeType.mesh:
+
+			ax, ay, az = LinAlg.euler_from_quaternion(rotate)
+
+			cmds.polyCube()
+			cmds.scale(scale[0], scale[1], scale[2])
+			cmds.move(translate[0],translate[1],translate[2])
+			cmds.rotate(ax,ay,az)
+
+		elif node.nodeType == NodeType.init:
+			pass
+
+		for child in node.children:
+			self.generateMeshHelper(child, np.array(translate), np.array(rotate), np.array(scale))
+
 
 
 

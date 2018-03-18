@@ -179,7 +179,7 @@ class EditorTranslate(Editor):
 		self.setLayout(self.layout) 
 
 	def setValues(self):
-		self.controller.setTranslateValues(self.translateXLineEdit.text(), self.translateYLineEdit.text(), self.translateZLineEdit.text())
+		self.controller.setTranslateValues(int(self.translateXLineEdit.text()), int(self.translateYLineEdit.text()), int(self.translateZLineEdit.text()))
 
 class EditorRotate(Editor):
 
@@ -218,7 +218,7 @@ class EditorRotate(Editor):
 		self.setLayout(self.layout)
 
 	def setValues(self):
-		self.controller.setRotateValues(self.rotateXLineEdit.text(), self.rotateYLineEdit.text(), self.rotateZLineEdit.text())
+		self.controller.setRotateValues(int(self.rotateXLineEdit.text()), int(self.rotateYLineEdit.text()), int(self.rotateZLineEdit.text()))
 
 class EditorScale(Editor):
 
@@ -257,7 +257,7 @@ class EditorScale(Editor):
 		self.setLayout(self.layout)
 
 	def setValues(self):
-		self.controller.setScaleValues(self.scaleXLineEdit.text(), self.scaleYLineEdit.text(), self.scaleZLineEdit.text())
+		self.controller.setScaleValues(int(self.scaleXLineEdit.text()), int(self.scaleYLineEdit.text()), int(self.scaleZLineEdit.text()))
 
 class EditorInitial(Editor):
 
@@ -296,7 +296,7 @@ class EditorInitial(Editor):
 		self.setLayout(self.layout)
 
 	def setValues(self):
-		self.controller.setInitialValues(self.lotXLineEdit.text(), self.lotYLineEdit.text(), self.lotZLineEdit.text())
+		self.controller.setInitialValues(int(self.lotXLineEdit.text()), int(self.lotYLineEdit.text()), int(self.lotZLineEdit.text()))
 
 class EditorMesh(Editor):
 
