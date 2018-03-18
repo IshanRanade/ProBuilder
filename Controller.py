@@ -24,6 +24,40 @@ class Controller(object):
 		self.nodz.signal_SocketConnected.connect(self.socketConnected)
 		self.nodz.signal_NodeSelected.connect(self.populateGUIEditor)
 
+		# Create a test graph
+		translate1 = self.graph.addNode(NodeType.translate)
+		translate1.translateX, translate1.translateY, translate1.translateZ = 0, 0, 6
+
+		translate2 = self.graph.addNode(NodeType.translate)
+		translate2.translateX, translate2.translateY, translate2.translateZ = 6, 0, 0
+
+		translate3 = self.graph.addNode(NodeType.translate)
+		translate3.translateX, translate3.translateY, translate3.translateZ = 0, 0, 16
+
+		scale1 = self.graph.addNode(NodeType.scale)
+		scale1.scaleX, scale1.scaleY, scale1.scaleZ = 8, 10, 18
+		 
+		scale2 = self.graph.addNode(NodeType.scale)
+		scale2.scaleX, scale2.scaleY, scale2.scaleZ = 7, 13, 18
+		
+		scale3 = self.graph.addNode(NodeType.scale)
+		scale3.scaleX, scale3.scaleY, scale3.scaleZ = 1, 1, 1
+
+		mesh1 = self.graph.addNode(NodeType.mesh)
+		mesh2 = self.graph.addNode(NodeType.mesh)
+		mesh3 = self.graph.addNode(NodeType.mesh)
+
+		self.graph.createManualEdge(self.graph.root, translate1)
+		self.graph.createManualEdge(translate1, scale1)
+		self.graph.createManualEdge(scale1, mesh1)
+		self.graph.createManualEdge(self.graph.root, translate2)
+		self.graph.createManualEdge(translate2, scale2)
+		self.graph.createManualEdge(scale2, mesh2)
+		self.graph.createManualEdge(mesh2, translate3)
+		self.graph.createManualEdge(translate3, scale3)
+		self.graph.createManualEdge(scale3, mesh3)
+
+
 	def nodeSelected(self, nodzNode):
 		if nodzNode is not None:
 			self.currentSelectedNode = self.graph.getNodeFromNodz(nodzNode)

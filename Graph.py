@@ -123,19 +123,28 @@ class Graph(object):
 		return self.nodzToNode[nodzNode]
 
 	def addNode(self, nodeType):
+		newNode = None
 		if(nodeType == NodeType.translate):
-			self.nodes.add(TranslateNode(self.nodz, self.nodzToNode))
+			newNode = TranslateNode(self.nodz, self.nodzToNode)
 		elif(nodeType == NodeType.rotate):
-			self.nodes.add(RotateNode(self.nodz, self.nodzToNode))
+			newNode = RotateNode(self.nodz, self.nodzToNode)
 		elif(nodeType == NodeType.scale):
-			self.nodes.add(ScaleNode(self.nodz, self.nodzToNode))
+			newNode = ScaleNode(self.nodz, self.nodzToNode)
 		elif(nodeType == NodeType.split):
-			self.nodes.add(SplitNode(self.nodz, self.nodzToNode))
+			newNode = SplitNode(self.nodz, self.nodzToNode)
 		elif(nodeType == NodeType.mesh):
-			self.nodes.add(MeshNode(self.nodz, self.nodzToNode))
+			newNode = MeshNode(self.nodz, self.nodzToNode)
 
-	def createEdge(self, srcNode, destNode):
-		self.nodzToNode[srcNode].children.append(self.nodzToNode[destNode])
+		self.nodes.add(newNode)
+
+		return newNode
+
+	def createEdge(self, srcNodzNode, destNodzNode):
+		self.nodzToNode[srcNodzNode].children.append(self.nodzToNode[destNodzNode])
+
+	def createManualEdge(self, srcNode, destNode):
+		srcNode.children.append(destNode)
+		self.nodz.createConnection(srcNode.nodzNode, 'Aattr1', destNode.nodzNode, 'Aattr1')
 
 	def printGraph(self):
 		queue = [self.root]
