@@ -29,13 +29,13 @@ class GUI(QtWidgets.QMainWindow):
 		self.nodePickerWidget = NodePickerWidget(self, self.controller)
 		self.layout.addWidget(self.nodePickerWidget)
 
-		self.editor = Editor(self)
-		self.editorTranslate = EditorTranslate(self)
-		self.editorRotate = EditorRotate(self)
-		self.editorScale = EditorScale(self)
-		self.editorInitial = EditorInitial(self)
-		self.editorMesh = EditorMesh(self)
-		self.editorSplit = EditorSplit(self)
+		self.editor = Editor(self, self.controller)
+		self.editorTranslate = EditorTranslate(self, self.controller)
+		self.editorRotate = EditorRotate(self, self.controller)
+		self.editorScale = EditorScale(self, self.controller)
+		self.editorInitial = EditorInitial(self, self.controller)
+		self.editorMesh = EditorMesh(self, self.controller)
+		self.editorSplit = EditorSplit(self, self.controller)
 
 		self.editorWidget = QtWidgets.QStackedWidget(self)
 		self.editorWidget.addWidget(self.editorTranslate) #0
@@ -131,27 +131,29 @@ class Generate(QtWidgets.QWidget):
 
 class Editor(QtWidgets.QWidget):
 
-	def __init__(self, parent):
+	def __init__(self, parent, controller):
 		super(Editor, self).__init__(parent)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 		self.layout.setAlignment(QtCore.Qt.AlignTop)
 
 		self.label = QtWidgets.QLabel("Attribute Editor:")
-		# self.label.setMinimumWidth(150)
-		# self.label.setMaximumWidth(150)
 		self.layout.addWidget(self.label)
 
 		self.setLayout(self.layout)
 
 class EditorTranslate(Editor):
 
-	def __init__(self, parent):
-		super(EditorTranslate, self).__init__(parent)
+	def __init__(self, parent, controller):
+		super(EditorTranslate, self).__init__(parent, controller)
+
+		self.controller = controller
 
 		self.translateX = QtWidgets.QHBoxLayout(self)
 		self.translateXLabel = QtWidgets.QLabel("Translate X: ")
 		self.translateXLineEdit = QtWidgets.QLineEdit()
+		self.translateXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.translateXLineEdit.textEdited.connect(self.setValues)
 		self.translateX.addWidget(self.translateXLabel)
 		self.translateX.addWidget(self.translateXLineEdit)
 		self.layout.addLayout(self.translateX)
@@ -159,6 +161,8 @@ class EditorTranslate(Editor):
 		self.translateY = QtWidgets.QHBoxLayout(self)
 		self.translateYLabel = QtWidgets.QLabel("Translate Y: ")
 		self.translateYLineEdit = QtWidgets.QLineEdit()
+		self.translateYLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.translateYLineEdit.textEdited.connect(self.setValues)
 		self.translateY.addWidget(self.translateYLabel)
 		self.translateY.addWidget(self.translateYLineEdit)
 		self.layout.addLayout(self.translateY)
@@ -166,20 +170,29 @@ class EditorTranslate(Editor):
 		self.translateZ = QtWidgets.QHBoxLayout(self)
 		self.translateZLabel = QtWidgets.QLabel("Translate Z: ")
 		self.translateZLineEdit = QtWidgets.QLineEdit()
+		self.translateZLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.translateZLineEdit.textEdited.connect(self.setValues)
 		self.translateZ.addWidget(self.translateZLabel)
 		self.translateZ.addWidget(self.translateZLineEdit)
 		self.layout.addLayout(self.translateZ)
 
-		self.setLayout(self.layout)
+		self.setLayout(self.layout) 
+
+	def setValues(self):
+		self.controller.setTranslateValues(self.translateXLineEdit.text(), self.translateYLineEdit.text(), self.translateZLineEdit.text())
 
 class EditorRotate(Editor):
 
-	def __init__(self, parent):
-		super(EditorRotate, self).__init__(parent)
+	def __init__(self, parent, controller):
+		super(EditorRotate, self).__init__(parent, controller)
+
+		self.controller = controller
 
 		self.rotateX = QtWidgets.QHBoxLayout(self)
 		self.rotateXLabel = QtWidgets.QLabel("Rotate X: ")
 		self.rotateXLineEdit = QtWidgets.QLineEdit()
+		self.rotateXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.rotateXLineEdit.textEdited.connect(self.setValues)
 		self.rotateX.addWidget(self.rotateXLabel)
 		self.rotateX.addWidget(self.rotateXLineEdit)
 		self.layout.addLayout(self.rotateX)
@@ -187,6 +200,8 @@ class EditorRotate(Editor):
 		self.rotateY = QtWidgets.QHBoxLayout(self)
 		self.rotateYLabel = QtWidgets.QLabel("Rotate Y: ")
 		self.rotateYLineEdit = QtWidgets.QLineEdit()
+		self.rotateYLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.rotateYLineEdit.textEdited.connect(self.setValues)
 		self.rotateY.addWidget(self.rotateYLabel)
 		self.rotateY.addWidget(self.rotateYLineEdit)
 		self.layout.addLayout(self.rotateY)
@@ -194,20 +209,29 @@ class EditorRotate(Editor):
 		self.rotateZ = QtWidgets.QHBoxLayout(self)
 		self.rotateZLabel = QtWidgets.QLabel("Rotate Z: ")
 		self.rotateZLineEdit = QtWidgets.QLineEdit()
+		self.rotateZLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.rotateZLineEdit.textEdited.connect(self.setValues)
 		self.rotateZ.addWidget(self.rotateZLabel)
 		self.rotateZ.addWidget(self.rotateZLineEdit)
 		self.layout.addLayout(self.rotateZ)
 
 		self.setLayout(self.layout)
 
+	def setValues(self):
+		self.controller.setRotateValues(self.rotateXLineEdit.text(), self.rotateYLineEdit.text(), self.rotateZLineEdit.text())
+
 class EditorScale(Editor):
 
-	def __init__(self, parent):
-		super(EditorScale, self).__init__(parent)
+	def __init__(self, parent, controller):
+		super(EditorScale, self).__init__(parent, controller)
+
+		self.controller = controller
 
 		self.scaleX = QtWidgets.QHBoxLayout(self)
 		self.scaleXLabel = QtWidgets.QLabel("Scale X: ")
 		self.scaleXLineEdit = QtWidgets.QLineEdit()
+		self.scaleXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.scaleXLineEdit.textEdited.connect(self.setValues)
 		self.scaleX.addWidget(self.scaleXLabel)
 		self.scaleX.addWidget(self.scaleXLineEdit)
 		self.layout.addLayout(self.scaleX)
@@ -215,6 +239,8 @@ class EditorScale(Editor):
 		self.scaleY = QtWidgets.QHBoxLayout(self)
 		self.scaleYLabel = QtWidgets.QLabel("Scale Y: ")
 		self.scaleYLineEdit = QtWidgets.QLineEdit()
+		self.scaleYLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.scaleYLineEdit.textEdited.connect(self.setValues)
 		self.scaleY.addWidget(self.scaleYLabel)
 		self.scaleY.addWidget(self.scaleYLineEdit)
 		self.layout.addLayout(self.scaleY)
@@ -222,21 +248,29 @@ class EditorScale(Editor):
 		self.scaleZ = QtWidgets.QHBoxLayout(self)
 		self.scaleZLabel = QtWidgets.QLabel("Scale Z: ")
 		self.scaleZLineEdit = QtWidgets.QLineEdit()
+		self.scaleZLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.scaleZLineEdit.textEdited.connect(self.setValues)
 		self.scaleZ.addWidget(self.scaleZLabel)
 		self.scaleZ.addWidget(self.scaleZLineEdit)
 		self.layout.addLayout(self.scaleZ)
 
 		self.setLayout(self.layout)
 
+	def setValues(self):
+		self.controller.setScaleValues(self.scaleXLineEdit.text(), self.scaleYLineEdit.text(), self.scaleZLineEdit.text())
+
 class EditorInitial(Editor):
 
-	def __init__(self, parent):
-		super(EditorInitial, self).__init__(parent)
+	def __init__(self, parent, controller):
+		super(EditorInitial, self).__init__(parent, controller)
+
+		self.controller = controller
 
 		self.lotX = QtWidgets.QHBoxLayout(self)
 		self.lotXLabel = QtWidgets.QLabel("Lot X: ")
 		self.lotXLineEdit = QtWidgets.QLineEdit()
 		self.lotXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.lotXLineEdit.textEdited.connect(self.setValues)
 		self.lotX.addWidget(self.lotXLabel)
 		self.lotX.addWidget(self.lotXLineEdit)
 		self.layout.addLayout(self.lotX)
@@ -245,6 +279,7 @@ class EditorInitial(Editor):
 		self.lotYLabel = QtWidgets.QLabel("Lot Y: ")
 		self.lotYLineEdit = QtWidgets.QLineEdit()
 		self.lotYLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.lotYLineEdit.textEdited.connect(self.setValues)
 		self.lotY.addWidget(self.lotYLabel)
 		self.lotY.addWidget(self.lotYLineEdit)
 		self.layout.addLayout(self.lotY)
@@ -253,16 +288,20 @@ class EditorInitial(Editor):
 		self.lotZLabel = QtWidgets.QLabel("Lot Z: ")
 		self.lotZLineEdit = QtWidgets.QLineEdit()
 		self.lotZLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.lotZLineEdit.textEdited.connect(self.setValues)
 		self.lotZ.addWidget(self.lotZLabel)
 		self.lotZ.addWidget(self.lotZLineEdit)
 		self.layout.addLayout(self.lotZ)
 
 		self.setLayout(self.layout)
 
-class EditorMesh(QtWidgets.QWidget):
+	def setValues(self):
+		self.controller.setInitialValues(self.lotXLineEdit.text(), self.lotYLineEdit.text(), self.lotZLineEdit.text())
 
-	def __init__(self, parent):
-		super(EditorMesh, self).__init__(parent)
+class EditorMesh(Editor):
+
+	def __init__(self, parent, controller):
+		super(EditorMesh, self).__init__(parent, controller)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 
@@ -277,10 +316,10 @@ class EditorMesh(QtWidgets.QWidget):
 
 		self.setLayout(self.layout)
 
-class EditorSplit(QtWidgets.QWidget):
+class EditorSplit(Editor):
 
-	def __init__(self, parent):
-		super(EditorSplit, self).__init__(parent)
+	def __init__(self, parent, controller):
+		super(EditorSplit, self).__init__(parent, controller)
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 

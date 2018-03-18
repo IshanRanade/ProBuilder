@@ -64,3 +64,23 @@ class Controller(object):
 
 			self.gui.update()
 
+	def setInitialValues(self, lotXValue, lotYValue, lotZValue):
+		self.currentSelectedNode.lotX = lotXValue
+		self.currentSelectedNode.lotY = lotYValue
+		self.currentSelectedNode.lotZ = lotZValue
+
+	def setTranslateValues(self, translateXValue, translateYValue, translateZValue):
+		self.currentSelectedNode.translateX = translateXValue
+		self.currentSelectedNode.translateY = translateYValue
+		self.currentSelectedNode.translateZ = translateZValue
+
+	def setRotateValues(self, rotateXValue, rotateYValue, rotateZValue):
+		self.currentSelectedNode.rotateX = rotateXValue
+		self.currentSelectedNode.rotateY = rotateYValue
+		self.currentSelectedNode.rotateZ = rotateZValue
+
+	def setScaleValues(self, scaleXValue, scaleYValue, scaleZValue):
+		self.currentSelectedNode.scaleX = scaleXValue
+		self.currentSelectedNode.scaleY = scaleYValue
+		self.currentSelectedNode.scaleZ = scaleZValue
+

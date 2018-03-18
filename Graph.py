@@ -145,7 +145,15 @@ class Graph(object):
 			for child in curr.children:
 				print curr.nodzNode.name + " -> " + child.nodzNode.name
 
+				attrsParent = vars(curr)
+				attrsChild = vars(child)
+
+				print ', '.join("%s: %s" % item for item in attrsParent.items()), "\n"
+				print ', '.join("%s: %s" % item for item in attrsChild.items())
+
 				queue.append(child)
+
+				print ""
 
 
 	def generateMesh(self):
