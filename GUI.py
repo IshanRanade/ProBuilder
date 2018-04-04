@@ -36,6 +36,8 @@ class GUI(QtWidgets.QMainWindow):
 		self.editorInitial = EditorInitial(self, self.controller)
 		self.editorMesh = EditorMesh(self, self.controller)
 		self.editorSplit = EditorSplit(self, self.controller)
+		#new
+		self.editorSplit_Helper =  EditorSplit_Helper(self, self.controller)
 
 		self.editorWidget = QtWidgets.QStackedWidget(self)
 		self.editorWidget.addWidget(self.editorTranslate) #0
@@ -43,8 +45,15 @@ class GUI(QtWidgets.QMainWindow):
 		self.editorWidget.addWidget(self.editorScale)     #2
 		self.editorWidget.addWidget(self.editorInitial)   #3
 		self.editorWidget.addWidget(self.editorMesh)      #4
-		self.editorWidget.addWidget(self.editorSplit)     #5
+		self.editorWidget.addWidget(self.editorSplit)     #5		
 		self.editorWidget.addWidget(self.editor)          #6
+
+		#NEW
+		self.editorWidget.addWidget(self.editorSplit_Helper)          #7
+
+		
+		
+		
 		self.layout.addWidget(self.editorWidget)
 
 		self.editorWidget.setCurrentIndex(6)
@@ -73,6 +82,9 @@ class GUI(QtWidgets.QMainWindow):
 			self.editorWidget.setCurrentIndex(5)
 		elif nodeType == NodeType.mesh:
 			self.editorWidget.setCurrentIndex(4)
+		#NEW!
+		elif nodeType == NodeType.Split_Helper:
+			self.editorWidget.setCurrentIndex(7)
 
 class NodePickerWidget(QtWidgets.QWidget):
 
@@ -298,39 +310,80 @@ class EditorInitial(Editor):
 	def setValues(self):
 		self.controller.setInitialValues(int(self.lotXLineEdit.text()), int(self.lotYLineEdit.text()), int(self.lotZLineEdit.text()))
 
+#New2
 class EditorMesh(Editor):
 
 	def __init__(self, parent, controller):
 		super(EditorMesh, self).__init__(parent, controller)
 
-		self.layout = QtWidgets.QVBoxLayout(self)
+		self.controller = controller
 
-		self.label = QtWidgets.QLabel("Attribute Editor:")
-		self.layout.addWidget(self.label)
-
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
-
-		self.button2 = QtWidgets.QPushButton("Button 2")
-		self.layout.addWidget(self.button2)
+		self.scaleX = QtWidgets.QHBoxLayout(self)
+		self.scaleXLabel = QtWidgets.QLabel("Name: ")
+		self.scaleXLineEdit = QtWidgets.QLineEdit()
+		#self.scaleXLineEdit.setValidator(QtGui.QStringValidator(0,1000,self))
+		self.scaleXLineEdit.textEdited.connect(self.setName)
+		self.scaleX.addWidget(self.scaleXLabel)
+		self.scaleX.addWidget(self.scaleXLineEdit)
+		self.layout.addLayout(self.scaleX)
 
 		self.setLayout(self.layout)
+
+	def setName(self):
+		self.controller.setMeshName(self.scaleXLineEdit.text())
 
 class EditorSplit(Editor):
 
 	def __init__(self, parent, controller):
 		super(EditorSplit, self).__init__(parent, controller)
 
-		self.layout = QtWidgets.QVBoxLayout(self)
+		self.controller = controller
 
-		self.label = QtWidgets.QLabel("Attribute Editor:")
-		self.layout.addWidget(self.label)
+		self.scaleX = QtWidgets.QHBoxLayout(self)
+		self.scaleXLabel = QtWidgets.QLabel("Segment: ")
+		self.scaleXLineEdit = QtWidgets.QLineEdit()
+		self.scaleXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.scaleXLineEdit.textEdited.connect(self.setValues)
+		self.scaleX.addWidget(self.scaleXLabel)
+		self.scaleX.addWidget(self.scaleXLineEdit)
+		self.layout.addLayout(self.scaleX)
 
-		self.button1 = QtWidgets.QPushButton("Button 1")
-		self.layout.addWidget(self.button1)
-
-		self.button2 = QtWidgets.QPushButton("Button 2")
-		self.layout.addWidget(self.button2)
+		self.lotZ = QtWidgets.QHBoxLayout(self)
+		self.lotZLabel = QtWidgets.QLabel("Segment Dir: ")
+		self.lotZLineEdit = QtWidgets.QLineEdit()
+		self.lotZLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.lotZLineEdit.textEdited.connect(self.setDir)
+		self.lotZ.addWidget(self.lotZLabel)
+		self.lotZ.addWidget(self.lotZLineEdit)
+		self.layout.addLayout(self.lotZ)
 
 		self.setLayout(self.layout)
+
+	def setValues(self):
+		self.controller.setSegmentValues(int(self.scaleXLineEdit.text()))
+	def setDir(self):
+		self.controller.setDirValues(int(self.lotZLineEdit.text()))
+
+#tmp class
+		
+class EditorSplit_Helper(Editor):
+
+	def __init__(self, parent, controller):
+		super(EditorSplit_Helper, self).__init__(parent, controller)
+
+		self.controller = controller
+
+		self.scaleX = QtWidgets.QHBoxLayout(self)
+		self.scaleXLabel = QtWidgets.QLabel("Proportion: ")
+		self.scaleXLineEdit = QtWidgets.QLineEdit()
+		self.scaleXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+		self.scaleXLineEdit.textEdited.connect(self.setValues)
+		self.scaleX.addWidget(self.scaleXLabel)
+		self.scaleX.addWidget(self.scaleXLineEdit)
+		self.layout.addLayout(self.scaleX)
+
+		self.setLayout(self.layout)
+
+	def setValues(self):
+		self.controller.setProportionValues(float(self.scaleXLineEdit.text()))
 

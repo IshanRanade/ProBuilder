@@ -10,6 +10,8 @@ class NodeType(object):
 	init = 3
 	split = 4
 	mesh = 5
+	#NEW! 
+	Split_Helper = 7
 
 	@staticmethod
 	def getString(nodeType):
@@ -25,6 +27,9 @@ class NodeType(object):
 			return "Split"
 		if nodeType == 5:
 			return "Mesh"
+                #NEW!
+		if nodeType == 7:
+			return "Split_Helper"
 
 class Node(object):
 
@@ -32,10 +37,15 @@ class Node(object):
 	children = None
 
 	nodzNode = None
+	nodz = None
+
+	graph = None
+	
 
 	def __init__(self, nodeType, nodz, nodzToNode):
 		self.nodeType = nodeType
 		self.children = []
+		self.nodz = nodz
 
 		self.nodzNode = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
 		nodz.createAttribute(node=self.nodzNode, name='Aattr1', index=-1, preset='attr_preset_1', plug=True, socket=True, dataType=str)
@@ -96,13 +106,59 @@ class ScaleNode(Node):
 
 class SplitNode(Node):
 
+        #tmp direction here, 0=X, 1=Y, 2=Z       
+        seg_dir= None 
+        
+        segment = None
+        graphFather = None
+        
+        segmentsArray = []
+
 	def __init__(self, nodz, nodzToNode):
 		super(SplitNode, self).__init__(NodeType.split, nodz, nodzToNode)
 
+		self.seg_dir = 0
+		self.segment = 0
+		self.segmentArray = []
+
+	def add_split_attr(self, segmentNum):
+
+                #Clear segment array
+                self.segmentArray = []
+                
+                for x in range(0,segmentNum):
+                    #self.segmentArray.append( self.nodz.createAttribute(node=self.nodzNode, name='Seg'+str(x), index=-1, preset='attr_preset_1', plug=True, socket=True, dataType=str) )
+                    self.nodz.createAttribute(node=self.nodzNode, name='Seg'+str(x), index=-1, preset='attr_preset_1', plug=True, socket=False, dataType=str)
+
+                    #new_nodz = None
+                    #new_nodz = self.nodz.createNode(name='helper'+str(x), preset='node_preset_1', position=None)
+                    
+                    #self.nodz.createAttribute(node=new_nodz, name='proportion', index=-1, preset='attr_preset_1', plug=True, socket=True, dataType=str)
+
+                    
+                    
+                    
+#New2
+
 class MeshNode(Node):
+
+        is_set=None
+        name=None
 
 	def __init__(self, nodz, nodzToNode):
 		super(MeshNode, self).__init__(NodeType.mesh, nodz, nodzToNode)
+
+		self.is_set = False
+
+#New
+class Split_Helper(Node):
+
+        proportion = None
+
+	def __init__(self, nodz, nodzToNode):
+		super(Split_Helper, self).__init__(NodeType.Split_Helper, nodz, nodzToNode)
+
+		self.proportion = 1.0
 
 
 class Graph(object):
@@ -130,8 +186,13 @@ class Graph(object):
 			newNode = RotateNode(self.nodz, self.nodzToNode)
 		elif(nodeType == NodeType.scale):
 			newNode = ScaleNode(self.nodz, self.nodzToNode)
+		#NEW
 		elif(nodeType == NodeType.split):
 			newNode = SplitNode(self.nodz, self.nodzToNode)
+		#NEW	
+		elif(nodeType == NodeType.Split_Helper):
+			newNode = Split_Helper(self.nodz, self.nodzToNode)
+			
 		elif(nodeType == NodeType.mesh):
 			newNode = MeshNode(self.nodz, self.nodzToNode)
 
@@ -171,7 +232,7 @@ class Graph(object):
 		transforms = cmds.ls(tr=True)
 		polyMeshes = cmds.filterExpand(transforms, sm=12)
 		cmds.select(polyMeshes, r=True)
-		cmds.delete()
+		#cmds.delete()
 
 		self.printGraph()
 
@@ -189,17 +250,101 @@ class Graph(object):
 			rotate = LinAlg.quaternion_multiply(rotate, LinAlg.quaternion_from_euler(node.rotateX, node.rotateY, node.rotateZ))
 		elif node.nodeType == NodeType.scale:
 			scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
+			
 		elif node.nodeType == NodeType.mesh:
 
+                #NEW2
+                        
 			ax, ay, az = LinAlg.euler_from_quaternion(rotate)
 
-			cmds.polyCube()
+                        if(node.is_set):
+                                cmds.duplicate(node.name)
+                                #Reset translate
+                                cmds.setAttr('%s.translateX'% node.name,0)
+                                cmds.setAttr('%s.translateY'% node.name,0)
+                                cmds.setAttr('%s.translateZ'% node.name,0)
+                        else:
+                                cmds.polyCube()
 			cmds.scale(scale[0], scale[1], scale[2])
 			cmds.move(translate[0],translate[1],translate[2])
 			cmds.rotate(ax,ay,az)
 
 		elif node.nodeType == NodeType.init:
 			pass
+
+		#NEW2!!!
+		elif node.nodeType == NodeType.Split_Helper:
+			pass
+
+		
+		elif node.nodeType == NodeType.split:
+                        
+                        total_weight = 0.0
+                        
+                        
+                        for child in node.children:
+                                total_weight = total_weight+child.proportion
+                                
+                        #segment directions
+                        #X dir
+                        if node.seg_dir%3 == 0:
+
+                                start=translate[0]-scale[0]/2.0
+                                
+                                for child in node.children:
+
+                                        new_scaleX=scale[0]*child.proportion / total_weight
+                                        new_scaleY=scale[1]
+                                        new_scaleZ = scale[2]
+
+                                        new_transX=start + scale[0]*new_scaleX/2.0
+                                        new_transY=translate[1]
+                                        new_transZ=translate[2]
+
+                                        start=start+ abs(scale[0]*new_scaleX)
+                                
+                                        self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
+
+                        #Y dir          
+                        elif node.seg_dir%3 == 1:
+
+                                start=translate[1]-scale[1]/2.0
+                                
+                                for child in node.children:
+
+                                        new_scaleX=scale[0]
+                                        new_scaleY=scale[1]*child.proportion / total_weight
+                                        new_scaleZ = scale[2]
+
+                                        new_transY=start + scale[1]*new_scaleY/2.0
+                                        new_transX=translate[0]
+                                        new_transZ=translate[2]
+
+                                        start=start+ abs(scale[1]*new_scaleY)
+                                
+                                        self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
+
+                        #Z dir            
+                        elif node.seg_dir%3 == 2:
+                                
+                                start=translate[2]-scale[2]/2.0
+                                
+                                for child in node.children:
+
+                                        new_scaleX=scale[0]
+                                        new_scaleY=scale[1]
+                                        new_scaleZ = scale[2]*child.proportion / total_weight
+                                
+                                        new_transZ=start + scale[2]*new_scaleZ/2.0
+                                        new_transX=translate[0]
+                                        new_transY=translate[1]
+
+                                        start=start+ abs(scale[2]*new_scaleZ)
+                                
+                                        self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
+                                        
+                        #jump out of function at here.
+			return 0
 
 		for child in node.children:
 			self.generateMeshHelper(child, np.array(translate), np.array(rotate), np.array(scale))

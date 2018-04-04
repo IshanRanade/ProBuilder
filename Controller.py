@@ -25,6 +25,7 @@ class Controller(object):
 		self.nodz.signal_NodeSelected.connect(self.populateGUIEditor)
 
 		# Create a test graph
+		"""
 		translate1 = self.graph.addNode(NodeType.translate)
 		translate1.translateX, translate1.translateY, translate1.translateZ = 0, 0, 6
 
@@ -56,6 +57,7 @@ class Controller(object):
 		self.graph.createManualEdge(mesh2, translate3)
 		self.graph.createManualEdge(translate3, scale3)
 		self.graph.createManualEdge(scale3, mesh3)
+		"""
 
 
 	def nodeSelected(self, nodzNode):
@@ -94,7 +96,16 @@ class Controller(object):
 			if node.nodeType == NodeType.scale:
 				self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.scaleX))
 				self.gui.editorWidget.currentWidget().scaleYLineEdit.setText(str(node.scaleY))
-				self.gui.editorWidget.currentWidget().scaleZLineEdit.setText(str(node.scaleZ))		
+				self.gui.editorWidget.currentWidget().scaleZLineEdit.setText(str(node.scaleZ))
+			#NEW
+			if node.nodeType == NodeType.split:
+				self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.segment))
+				self.gui.editorWidget.currentWidget().lotZLineEdit.setText(str(node.seg_dir))
+			if node.nodeType == NodeType.Split_Helper:
+				self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.proportion))
+			#New2
+			if node.nodeType == NodeType.mesh:
+				self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
 
 			self.gui.update()
 
@@ -118,3 +129,34 @@ class Controller(object):
 		self.currentSelectedNode.scaleY = scaleYValue
 		self.currentSelectedNode.scaleZ = scaleZValue
 
+        #NEW2
+	def setSegmentValues(self, segmentNum):
+		self.currentSelectedNode.segment = segmentNum
+		#self.currentSelectedNode.add_split_attr(int(segmentNum))
+
+		for x in range (0,segmentNum):
+                    self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Seg'+str(x), index=-1, preset='attr_preset_1', plug=True, socket=False, dataType=str)
+                    
+                    new_node = self.graph.addNode(NodeType.Split_Helper)
+
+                    #No need to do this since it has already been added in addNode!
+                    #self.currentSelectedNode.children.append(new_node)
+                    
+                    self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Seg'+str(x),new_node.nodzNode, 'Aattr1')
+                    
+        def setDirValues(self, seg_dir):
+		self.currentSelectedNode.seg_dir = seg_dir
+		
+        def setProportionValues(self, proportion):
+		self.currentSelectedNode.proportion = proportion
+
+        #New2
+	def setMeshName(self, name):
+                self.currentSelectedNode.name=name
+                self.currentSelectedNode.is_set=True
+
+
+
+
+		
+		
