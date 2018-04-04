@@ -1659,8 +1659,9 @@ class SocketItem(SlotItem):
 
         """
         if isinstance(plug_item, PlugItem):
+            #NEW2 Allow multiple input!
             if (self.parentItem() != plug_item.parentItem() and
-                len(self.connected_slots) <= 1):
+                len(self.connected_slots) <= 100):
                 if plug_item.dataType == self.dataType:
                     if plug_item in self.connected_slots:
                         return False
