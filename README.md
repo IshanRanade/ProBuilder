@@ -4,6 +4,7 @@ Replace the Probuilder path with the path to wherever you downloaded this repo.
 ```python
 import maya.cmds as cmds
 
+cmds.unloadPlugin('ProBuilder')
 cmds.loadPlugin('/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/ProBuilder.py')
 
 ```
