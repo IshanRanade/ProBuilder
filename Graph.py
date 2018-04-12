@@ -43,13 +43,13 @@ class Node(object):
 	graph = None
 	
 
-	def __init__(self, nodeType, nodz, nodzToNode):
+	def __init__(self, nodeType, nodz, nodzToNode, isPlug, isSocket):
 		self.nodeType = nodeType
 		self.children = []
 		self.nodz = nodz
 
 		self.nodzNode = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
-		nodz.createAttribute(node=self.nodzNode, name='Aattr1', index=-1, preset='attr_preset_1', plug=True, socket=True, dataType=str)
+		nodz.createAttribute(node=self.nodzNode, name='Aattr1', index=-1, preset='attr_preset_1', plug=isPlug, socket=isSocket, dataType=str)
 
 		nodzToNode[self.nodzNode] = self
 
@@ -60,7 +60,7 @@ class InitialNode(Node):
 	lotZ = None
 
 	def __init__(self, nodz, nodzToNode):
-		super(InitialNode, self).__init__(NodeType.init, nodz, nodzToNode)
+		super(InitialNode, self).__init__(NodeType.init, nodz, nodzToNode, True, False)
 
 		self.lotX = 0
 		self.lotY = 0
@@ -73,7 +73,7 @@ class TranslateNode(Node):
 	translateZ = None
 
 	def __init__(self, nodz, nodzToNode):
-		super(TranslateNode, self).__init__(NodeType.translate, nodz, nodzToNode)
+		super(TranslateNode, self).__init__(NodeType.translate, nodz, nodzToNode, True, True)
 
 		self.translateX = 0
 		self.translateY = 0
@@ -86,7 +86,7 @@ class RotateNode(Node):
 	rotateZ = None
 
 	def __init__(self, nodz, nodzToNode):
-		super(RotateNode, self).__init__(NodeType.rotate, nodz, nodzToNode)
+		super(RotateNode, self).__init__(NodeType.rotate, nodz, nodzToNode, True, True)
 
 		self.rotateX = 0
 		self.rotateY = 0
@@ -99,7 +99,7 @@ class ScaleNode(Node):
 	scaleZ = None
 
 	def __init__(self, nodz, nodzToNode):
-		super(ScaleNode, self).__init__(NodeType.scale, nodz, nodzToNode)
+		super(ScaleNode, self).__init__(NodeType.scale, nodz, nodzToNode, True, True)
 
 		self.scaleX = 1
 		self.scaleY = 1
@@ -116,7 +116,7 @@ class SplitNode(Node):
 	segmentsArray = []
 
 	def __init__(self, nodz, nodzToNode):
-		super(SplitNode, self).__init__(NodeType.split, nodz, nodzToNode)
+		super(SplitNode, self).__init__(NodeType.split, nodz, nodzToNode, True, True)
 
 		self.seg_dir = 0
 		self.segment = 0
@@ -136,7 +136,7 @@ class MeshNode(Node):
 	name=None
 
 	def __init__(self, nodz, nodzToNode):
-		super(MeshNode, self).__init__(NodeType.mesh, nodz, nodzToNode)
+		super(MeshNode, self).__init__(NodeType.mesh, nodz, nodzToNode, False, True)
 
 		self.is_set = False
 
@@ -146,7 +146,7 @@ class Split_Helper(Node):
 	proportion = None
 
 	def __init__(self, nodz, nodzToNode):
-		super(Split_Helper, self).__init__(NodeType.Split_Helper, nodz, nodzToNode)
+		super(Split_Helper, self).__init__(NodeType.Split_Helper, nodz, nodzToNode, True, True)
 
 		self.proportion = 1.0
 
