@@ -191,12 +191,15 @@ class EditorTranslate(Editor):
 		self.setLayout(self.layout) 
 
 	def setValues(self):
-		self.controller.setTranslateValues(float(self.translateXLineEdit.text()), float(self.translateYLineEdit.text()), float(self.translateZLineEdit.text()))
+		if self.translateXLineEdit.text() not in ["-", ""] and self.translateYLineEdit.text() not in ["-", ""] and self.translateZLineEdit.text() not in ["-", ""]	:
+			self.controller.setTranslateValues(float(self.translateXLineEdit.text()), float(self.translateYLineEdit.text()), float(self.translateZLineEdit.text()))
 
 class EditorRotate(Editor):
 
 	def __init__(self, parent, controller):
 		super(EditorRotate, self).__init__(parent, controller)
+
+		#print "hello"
 
 		self.controller = controller
 
@@ -230,7 +233,8 @@ class EditorRotate(Editor):
 		self.setLayout(self.layout)
 
 	def setValues(self):
-		self.controller.setRotateValues(float(self.rotateXLineEdit.text()), float(self.rotateYLineEdit.text()), float(self.rotateZLineEdit.text()))
+		if self.rotateXLineEdit.text() not in ["-", ""] and self.rotateYLineEdit.text() not in ["-", ""] and self.rotateZLineEdit.text() not in ["-", ""]:
+			self.controller.setRotateValues(float(self.rotateXLineEdit.text()), float(self.rotateYLineEdit.text()), float(self.rotateZLineEdit.text()))
 
 class EditorScale(Editor):
 
@@ -269,7 +273,8 @@ class EditorScale(Editor):
 		self.setLayout(self.layout)
 
 	def setValues(self):
-		self.controller.setScaleValues(float(self.scaleXLineEdit.text()), float(self.scaleYLineEdit.text()), float(self.scaleZLineEdit.text()))
+		if self.scaleXLineEdit.text() not in ["-", ""] and self.scaleYLineEdit.text() not in ["-", ""] and self.scaleZLineEdit.text() not in ["-", ""]:
+			self.controller.setScaleValues(float(self.scaleXLineEdit.text()), float(self.scaleYLineEdit.text()), float(self.scaleZLineEdit.text()))
 
 class EditorInitial(Editor):
 
@@ -308,7 +313,8 @@ class EditorInitial(Editor):
 		self.setLayout(self.layout)
 
 	def setValues(self):
-		self.controller.setInitialValues(int(self.lotXLineEdit.text()), int(self.lotYLineEdit.text()), int(self.lotZLineEdit.text()))
+		if self.lotXLineEdit.text() not in ["-", ""] and self.lotYLineEdit.text() not in ["-", ""] and self.lotZLineEdit.text() not in ["-", ""]:
+			self.controller.setInitialValues(int(self.lotXLineEdit.text()), int(self.lotYLineEdit.text()), int(self.lotZLineEdit.text()))
 
 #New2
 class EditorMesh(Editor):

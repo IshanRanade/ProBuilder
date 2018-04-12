@@ -1,12 +1,17 @@
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
-from Qt import QtCore, QtWidgets
-import nodz_main
-from Graph import NodeType
-from Graph import Node
-from GUI import GUI
-from Controller import Controller
+import maya.OpenMayaUI as mui
 import sys
+from Qt import QtCore, QtWidgets
+
+import nodz_main
+import Graph
+import Controller
+import GUI
+
+reload(GUI)
+reload(Controller)
+reload(Graph)
 
 class MyCommandClass( OpenMayaMPx.MPxCommand ):
     
@@ -45,7 +50,7 @@ except:
     # I guess we're running somewhere that already has a QApp created
     app = None
 
-controller = Controller()
+controller = Controller.Controller()
 
 if app:
     # command line stand alone test... run our own event loop

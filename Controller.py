@@ -26,7 +26,7 @@ class Controller(object):
 		self.nodz.signal_SocketConnected.connect(self.socketConnected)
 		self.nodz.signal_NodeSelected.connect(self.populateGUIEditor)
 
-                self.gui.setWindowOpacity(0.8)
+		self.gui.setWindowOpacity(0.8)
 		
 
 		# Create a test graph
@@ -134,34 +134,28 @@ class Controller(object):
 		self.currentSelectedNode.scaleY = scaleYValue
 		self.currentSelectedNode.scaleZ = scaleZValue
 
-        #NEW2
+		#NEW2
 	def setSegmentValues(self, segmentNum):
 		self.currentSelectedNode.segment = segmentNum
 		#self.currentSelectedNode.add_split_attr(int(segmentNum))
 
 		for x in range (0,segmentNum):
-                    self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Seg'+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
-                    
-                    new_node = self.graph.addNode(NodeType.Split_Helper)
+			self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Seg'+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
+			
+			new_node = self.graph.addNode(NodeType.Split_Helper)
 
-                    #No need to do this since it has already been added in addNode!
-                    #self.currentSelectedNode.children.append(new_node)
-                    
-                    self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Seg'+str(x),new_node.nodzNode, 'Aattr1')
-                    
-        def setDirValues(self, seg_dir):
+			#No need to do this since it has already been added in addNode!
+			#self.currentSelectedNode.children.append(new_node)
+			
+			self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Seg'+str(x),new_node.nodzNode, 'Aattr1')
+					
+	def setDirValues(self, seg_dir):
 		self.currentSelectedNode.seg_dir = seg_dir
-		
-        def setProportionValues(self, proportion):
+	
+	def setProportionValues(self, proportion):
 		self.currentSelectedNode.proportion = proportion
 
-        #New2
+	#New2
 	def setMeshName(self, name):
-                self.currentSelectedNode.name=name
-                self.currentSelectedNode.is_set=True
-
-
-
-
-		
-		
+		self.currentSelectedNode.name=name
+		self.currentSelectedNode.is_set=True
