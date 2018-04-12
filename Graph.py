@@ -220,16 +220,9 @@ class Graph(object):
 	def generateMesh(self):
 		# First delete all the existing geometry in the scene
 		transforms = cmds.ls(tr=True)
-		#polyMeshes = cmds.filterExpand(transforms, sm=12)
-		#cmds.select(polyMeshes, r=True)
-		#cmds.delete()
-
-		self.printGraph()
-
-		# Now generate the mesh from the tree
-		# cmds.polyCube()
-		# cmds.move(10,10,10)
-		# cmds.rotate(19,10,10)
+		polyMeshes = cmds.filterExpand(transforms, sm=12)
+		cmds.select(polyMeshes, r=True)
+		cmds.delete()
 
 		self.generateMeshHelper(self.root, np.array([0,0,0]), np.array([1,0,0,0]), np.array([1,1,1]))
 
@@ -357,4 +350,3 @@ class Graph(object):
 				cmds.scale(scale[0], scale[1], scale[2])
 				cmds.move(translate[0],translate[1],translate[2])
 				cmds.rotate(ax,ay,az)
-				

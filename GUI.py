@@ -371,7 +371,6 @@ class EditorSplit(Editor):
 		self.controller.setDirValues(int(self.lotZLineEdit.text()))
 
 #tmp class
-		
 class EditorSplit_Helper(Editor):
 
 	def __init__(self, parent, controller):
@@ -392,4 +391,3 @@ class EditorSplit_Helper(Editor):
 
 	def setValues(self):
 		self.controller.setProportionValues(float(self.scaleXLineEdit.text()))
-
