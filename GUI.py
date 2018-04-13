@@ -146,6 +146,7 @@ class Editor(QtWidgets.QWidget):
         self.layout.setAlignment(QtCore.Qt.AlignTop)
 
         self.label = QtWidgets.QLabel("Attribute Editor:")
+        self.label.setAlignment(QtCore.Qt.AlignHCenter)
         self.layout.addWidget(self.label)
 
         self.setLayout(self.layout)
@@ -364,7 +365,6 @@ class EditorSplit(Editor):
         self.setLayout(self.layout)
 
     def setCountValue(self):
-        print self.segmentCountSpinBox.value()
         self.controller.setSegmentValues(self.segmentCountSpinBox.value())
     def setDirection(self):
         self.controller.setDirValues(self.segmentDirectionSpinBox.value())

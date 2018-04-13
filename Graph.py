@@ -49,7 +49,7 @@ class Node(object):
         self.nodz = nodz
 
         self.nodzNode = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
-        nodz.createAttribute(node=self.nodzNode, name='Aattr1', index=-1, preset='attr_preset_1', plug=isPlug, socket=isSocket, dataType=str)
+        nodz.createAttribute(node=self.nodzNode, name='Node', index=-1, preset='attr_preset_1', plug=isPlug, socket=isSocket, dataType=str)
 
         nodzToNode[self.nodzNode] = self
 
@@ -128,7 +128,8 @@ class SplitNode(Node):
 
         for x in range(0,segmentNum):
             #self.segmentArray.append( self.nodz.createAttribute(node=self.nodzNode, name='Seg'+str(x), index=-1, preset='attr_preset_1', plug=True, socket=True, dataType=str) )
-            self.nodz.createAttribute(node=self.nodzNode, name='Seg'+str(x), index=-1, preset='attr_preset_1', plug=True, socket=False, dataType=str)
+            pass
+            #self.nodz.createAttribute(node=self.nodzNode, name='Segment '+str(x), index=-1, preset='attr_preset_3', plug=True, socket=False, dataType=str)
 
 class MeshNode(Node):
 
@@ -195,7 +196,7 @@ class Graph(object):
 
     def createManualEdge(self, srcNode, destNode):
         srcNode.children.append(destNode)
-        self.nodz.createConnection(srcNode.nodzNode, 'Aattr1', destNode.nodzNode, 'Aattr1')
+        self.nodz.createConnection(srcNode.nodzNode, 'Node', destNode.nodzNode, 'Node')
 
     def printGraph(self):
         queue = [self.root]

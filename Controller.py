@@ -143,7 +143,7 @@ class Controller(object):
             #No need to do this since it has already been added in addNode!
             #self.currentSelectedNode.children.append(new_node)
             
-            self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Seg'+str(x),new_node.nodzNode, 'Aattr1')
+            self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Seg'+str(x),new_node.nodzNode, 'Node')
                     
     def setDirValues(self, seg_dir):
         self.currentSelectedNode.seg_dir = seg_dir

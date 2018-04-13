@@ -9,9 +9,9 @@ import GUI
 import LinAlg
 
 reload(nodz_main)
+reload(Graph)
 reload(GUI)
 reload(Controller)
-reload(Graph)
 reload(LinAlg)
 
 
