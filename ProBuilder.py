@@ -1,6 +1,4 @@
-import maya.OpenMaya as OpenMaya
 import maya.OpenMayaMPx as OpenMayaMPx
-import maya.OpenMayaUI as mui
 import sys
 from Qt import QtCore, QtWidgets
 
@@ -8,10 +6,14 @@ import nodz_main
 import Graph
 import Controller
 import GUI
+import LinAlg
 
+reload(nodz_main)
 reload(GUI)
 reload(Controller)
 reload(Graph)
+reload(LinAlg)
+
 
 class MyCommandClass( OpenMayaMPx.MPxCommand ):
     
@@ -23,8 +25,10 @@ class MyCommandClass( OpenMayaMPx.MPxCommand ):
         ''' Command execution. '''
         pass
 
+
 kPluginCmdName = "ProBuilder"
 cmdCreator = MyCommandClass()
+
 
 # Initialize the script plug-in
 def initializePlugin(mobject):
@@ -35,6 +39,7 @@ def initializePlugin(mobject):
         sys.stderr.write( "Failed to register command: %s\n" % kPluginCmdName )
         raise
 
+
 # Uninitialize the script plug-in
 def uninitializePlugin(mobject):
     mplugin = OpenMayaMPx.MFnPlugin(mobject)
@@ -44,12 +49,14 @@ def uninitializePlugin(mobject):
         sys.stderr.write( "Failed to unregister command: %s\n" % kPluginCmdName )
         raise
 
+
 try:
     app = QtWidgets.QApplication([])
 except:
     # I guess we're running somewhere that already has a QApp created
     app = None
 
+# Create an instance of a controller, which stores the application
 controller = Controller.Controller()
 
 if app:
