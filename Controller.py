@@ -73,7 +73,7 @@ class Controller(object):
             self.gui.update()
 
     def attributeSelected(self, nodzNode, attributeNum):
-        pass
+        print attributeNum
 
     def socketConnected(self, srcNode, srcPlugName, destNode, dstSocketName):
         self.graph.createEdge(srcNode, destNode)
@@ -142,14 +142,14 @@ class Controller(object):
         #self.currentSelectedNode.add_split_attr(int(segmentNum))
 
         for x in range (0,segmentNum):
-            self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Seg'+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
+            self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Segment '+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
             
             new_node = self.graph.addNode(NodeType.Split_Helper)
 
             #No need to do this since it has already been added in addNode!
             #self.currentSelectedNode.children.append(new_node)
             
-            self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Seg'+str(x),new_node.nodzNode, 'Node')
+            self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Segment '+str(x),new_node.nodzNode, 'Node')
                     
     def setDirValues(self, seg_dir):
         self.currentSelectedNode.seg_dir = seg_dir

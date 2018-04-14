@@ -423,18 +423,24 @@ class Nodz(QtWidgets.QGraphicsView):
 
         # Emit signal.
         if len(selected_nodes) == 1:
+            # If only one attribute in this node then directly emit
+            if selected_nodes[0].attrCount <= 1:
+                self.signal_NodeSelected.emit(selected_nodes[0])
+            
+            # Otherwise find which attribute was selected and emit node and attribute number from top
             pointerPos = self.mapFromGlobal(QtGui.QCursor.pos())
 
-            print pointerPos
+            nodeTopLeft = self.viewport().mapToParent(self.mapFromScene(selected_nodes[0].mapToScene(selected_nodes[0].boundingRect().topLeft())))
+            nodeBottomLeft = self.viewport().mapToParent(self.mapFromScene(selected_nodes[0].mapToScene(selected_nodes[0].boundingRect().bottomLeft())))
 
-            
+            borderDist = selected_nodes[0].baseHeight - selected_nodes[0].radius
+            if pointerPos.y() > nodeTopLeft.y() + borderDist:
+                if pointerPos.y() < nodeBottomLeft.y() - borderDist - selected_nodes[0].attrHeight:
+                    attrNumFromTop = (pointerPos.y() - nodeTopLeft.y() - borderDist) / selected_nodes[0].attrHeight
+                    self.signal_AttrSelected.emit(selected_nodes[0], attrNumFromTop)
+                    return
 
-            scenePos = selected_nodes[0].mapToScene(selected_nodes[0].boundingRect().topLeft())
-            viewportPos = self.mapFromScene(scenePos)
-            viewPos = self.viewport().mapToParent(viewportPos)
-
-            print viewPos.x(), " ", viewPos.y()
-
+            # If the "Node" attribute was selected then just emit the node
             self.signal_NodeSelected.emit(selected_nodes[0])
         else:
             self.signal_NodeSelected.emit(None)
