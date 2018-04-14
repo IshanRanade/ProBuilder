@@ -66,7 +66,9 @@ class GUI(QtWidgets.QMainWindow):
         self.setWindowTitle("ProBuilder")
 
     def changeEditorWidgetLayout(self, nodeType):
-        if nodeType == NodeType.init:
+        if nodeType == "Default":
+            self.editorWidget.setCurrentIndex(6)
+        elif nodeType == NodeType.init:
             self.editorWidget.setCurrentIndex(3)
         elif nodeType == NodeType.translate:
             self.editorWidget.setCurrentIndex(0)

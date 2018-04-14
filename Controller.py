@@ -22,6 +22,7 @@ class Controller(object):
         self.nodz.signal_NodeSelected.connect(self.nodeSelected)
         self.nodz.signal_SocketConnected.connect(self.socketConnected)
         self.nodz.signal_NodeSelected.connect(self.populateGUIEditor)
+        self.nodz.signal_AttrSelected.connect(self.attributeSelected)
 
         self.gui.setWindowOpacity(0.8)
         
@@ -68,6 +69,11 @@ class Controller(object):
             self.gui.update()
         else:
             self.currentSelectedNode = None
+            self.gui.changeEditorWidgetLayout("Default")
+            self.gui.update()
+
+    def attributeSelected(self, nodzNode, attributeNum):
+        pass
 
     def socketConnected(self, srcNode, srcPlugName, destNode, dstSocketName):
         self.graph.createEdge(srcNode, destNode)
