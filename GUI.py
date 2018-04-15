@@ -36,16 +36,16 @@ class GUI(QtWidgets.QMainWindow):
         self.editorSplit_Helper =  EditorSplit_Helper(self, self.controller)
 
         self.editorWidget = QtWidgets.QStackedWidget(self)
-        self.editorWidget.addWidget(self.editorTranslate) #0
-        self.editorWidget.addWidget(self.editorRotate)    #1
-        self.editorWidget.addWidget(self.editorScale)     #2
-        self.editorWidget.addWidget(self.editorInitial)   #3
-        self.editorWidget.addWidget(self.editorMesh)      #4
-        self.editorWidget.addWidget(self.editorSplit)     #5        
-        self.editorWidget.addWidget(self.editor)          #6
+        self.editorWidget.addWidget(self.editorTranslate)     #0
+        self.editorWidget.addWidget(self.editorRotate)        #1
+        self.editorWidget.addWidget(self.editorScale)         #2
+        self.editorWidget.addWidget(self.editorInitial)       #3
+        self.editorWidget.addWidget(self.editorMesh)          #4
+        self.editorWidget.addWidget(self.editorSplit)         #5        
+        self.editorWidget.addWidget(self.editor)              #6
 
         #NEW
-        self.editorWidget.addWidget(self.editorSplit_Helper)          #7
+        self.editorWidget.addWidget(self.editorSplit_Helper)  #7
 
         
         
@@ -81,7 +81,7 @@ class GUI(QtWidgets.QMainWindow):
         elif nodeType == NodeType.mesh:
             self.editorWidget.setCurrentIndex(4)
         #NEW!
-        elif nodeType == NodeType.Split_Helper:
+        elif nodeType == NodeType.splitSegment:
             self.editorWidget.setCurrentIndex(7)
 
 class NodePickerWidget(QtWidgets.QWidget):
@@ -370,6 +370,26 @@ class EditorSplit(Editor):
         self.controller.setSegmentValues(self.segmentCountSpinBox.value())
     def setDirection(self):
         self.controller.setDirValues(self.segmentDirectionSpinBox.value())
+
+class EditorSegment(Editor):
+    def __init__(self, parent, controller):
+        super(EditorSegment, self).__init__(parent, controller)
+
+        self.controller = controller
+
+        self.proportion = QtWidgets.QHBoxLayout(self)
+        self.proportionLabel = QtWidgets.QLabel("Proportion: ")
+        self.proportionLineEdit = QtWidgets.QLineEdit()
+        self.proportionLineEdit.setValidator(QtGui.QDoubleValidator(-1000,1000, 5,self))
+        self.proportionLineEdit.textEdited.connect(self.setValues)
+        self.proportion.addWidget(self.proportionLabel)
+        self.proportion.addWidget(self.proportionLineEdit)
+        self.layout.addLayout(self.proportion)
+
+        self.setLayout(self.layout)
+
+    def setValues(self):
+        self.controller.setProportionValues(float(self.proportionLineEdit.text()))
 
 #tmp class
 class EditorSplit_Helper(Editor):

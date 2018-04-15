@@ -108,7 +108,7 @@ class Controller(object):
             if node.nodeType == NodeType.split:
                 self.gui.editorWidget.currentWidget().segmentCountSpinBox.setValue(int(node.segment))
                 self.gui.editorWidget.currentWidget().segmentDirectionSpinBox.setValue(int(node.seg_dir))
-            if node.nodeType == NodeType.Split_Helper:
+            if node.nodeType == NodeType.splitSegment:
                 self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.proportion))
             #New2
             if node.nodeType == NodeType.mesh:
@@ -144,7 +144,7 @@ class Controller(object):
         for x in range (0,segmentNum):
             self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Segment '+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
             
-            new_node = self.graph.addNode(NodeType.Split_Helper)
+            new_node = self.graph.addNode(NodeType.splitSegment)
 
             #No need to do this since it has already been added in addNode!
             #self.currentSelectedNode.children.append(new_node)

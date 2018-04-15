@@ -11,8 +11,7 @@ class NodeType(object):
     init = 3
     split = 4
     mesh = 5
-    #NEW! 
-    Split_Helper = 7
+    splitSegment = 6
 
     @staticmethod
     def getString(nodeType):
@@ -28,7 +27,6 @@ class NodeType(object):
             return "Split"
         if nodeType == 5:
             return "Mesh"
-        #NEW!
         if nodeType == 7:
             return "Split_Helper"
 
@@ -141,13 +139,12 @@ class MeshNode(Node):
 
         self.is_set = False
 
-#New
-class Split_Helper(Node):
+class SplitSegment(Node):
 
     proportion = None
 
     def __init__(self, nodz, nodzToNode):
-        super(Split_Helper, self).__init__(NodeType.Split_Helper, nodz, nodzToNode, True, True)
+        super(SplitSegment, self).__init__(NodeType.splitSegment, nodz, nodzToNode, True, True)
 
         self.proportion = 1.0
 
@@ -177,13 +174,10 @@ class Graph(object):
             newNode = RotateNode(self.nodz, self.nodzToNode)
         elif(nodeType == NodeType.scale):
             newNode = ScaleNode(self.nodz, self.nodzToNode)
-        #NEW
         elif(nodeType == NodeType.split):
             newNode = SplitNode(self.nodz, self.nodzToNode)
-        #NEW    
-        elif(nodeType == NodeType.Split_Helper):
-            newNode = Split_Helper(self.nodz, self.nodzToNode)
-            
+        elif(nodeType == NodeType.splitSegment):
+            newNode = SplitSegment(self.nodz, self.nodzToNode)
         elif(nodeType == NodeType.mesh):
             newNode = MeshNode(self.nodz, self.nodzToNode)
 
