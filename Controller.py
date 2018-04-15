@@ -6,6 +6,7 @@ from GUI import GUI
 class Controller(object):
 
     currentSelectedNode = None
+    currentSelectedAttribute = None
     nodz = None
     gui = None
     graph = None
@@ -21,7 +22,6 @@ class Controller(object):
 
         self.nodz.signal_NodeSelected.connect(self.nodeSelected)
         self.nodz.signal_SocketConnected.connect(self.socketConnected)
-        self.nodz.signal_NodeSelected.connect(self.populateGUIEditor)
         self.nodz.signal_AttrSelected.connect(self.attributeSelected)
 
         self.gui.setWindowOpacity(0.8)
@@ -65,18 +65,28 @@ class Controller(object):
     def nodeSelected(self, nodzNode):
         if nodzNode is not None:
             self.currentSelectedNode = self.graph.getNodeFromNodz(nodzNode)
+            self.currentSelectedAttribute = None
             self.gui.changeEditorWidgetLayout(self.graph.getNodeFromNodz(nodzNode).nodeType)
             self.gui.update()
         else:
             self.currentSelectedNode = None
+            self.currentSelectedAttribute = None
             self.gui.changeEditorWidgetLayout("Default")
             self.gui.update()
+            return
+            
+        self.populateGUIEditor(self.graph.getNodeFromNodz(nodzNode))
 
     def attributeSelected(self, nodzNode, attributeNum):
-        print attributeNum
+        if self.graph.getNodeFromNodz(nodzNode).nodeType == NodeType.split:
+            self.currentSelectedNode = self.graph.getNodeFromNodz(nodzNode)
+            self.currentSelectedAttribute = attributeNum
+            self.gui.changeEditorWidgetLayout("SplitSegment")
+            self.gui.update()
+            self.populateGUIEditor(self.graph.getNodeFromNodz(nodzNode).children[attributeNum])
 
     def socketConnected(self, srcNode, srcPlugName, destNode, dstSocketName):
-        self.graph.createEdge(srcNode, destNode)
+        self.graph.createEdge(srcNode, srcPlugName, destNode, dstSocketName)
 
     def addNode(self, nodeType):
         self.graph.addNode(nodeType)
@@ -84,37 +94,32 @@ class Controller(object):
     def generateMesh(self):
         self.graph.generateMesh()
 
-    def populateGUIEditor(self, nodzNode):
-        if nodzNode is not None:
-            node = self.graph.getNodeFromNodz(nodzNode)
+    def populateGUIEditor(self, node):
+        if node.nodeType == NodeType.init:
+            self.gui.editorWidget.currentWidget().lotXLineEdit.setText(str(node.lotX))
+            self.gui.editorWidget.currentWidget().lotYLineEdit.setText(str(node.lotY))
+            self.gui.editorWidget.currentWidget().lotZLineEdit.setText(str(node.lotZ))
+        elif node.nodeType == NodeType.translate:
+            self.gui.editorWidget.currentWidget().translateXLineEdit.setText(str(node.translateX))
+            self.gui.editorWidget.currentWidget().translateYLineEdit.setText(str(node.translateY))
+            self.gui.editorWidget.currentWidget().translateZLineEdit.setText(str(node.translateZ))
+        elif node.nodeType == NodeType.rotate:
+            self.gui.editorWidget.currentWidget().rotateXLineEdit.setText(str(node.rotateX))
+            self.gui.editorWidget.currentWidget().rotateYLineEdit.setText(str(node.rotateY))
+            self.gui.editorWidget.currentWidget().rotateZLineEdit.setText(str(node.rotateZ))
+        elif node.nodeType == NodeType.scale:
+            self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.scaleX))
+            self.gui.editorWidget.currentWidget().scaleYLineEdit.setText(str(node.scaleY))
+            self.gui.editorWidget.currentWidget().scaleZLineEdit.setText(str(node.scaleZ))
+        elif node.nodeType == NodeType.split:
+            self.gui.editorWidget.currentWidget().segmentCountSpinBox.setValue(int(node.segmentCount))
+            self.gui.editorWidget.currentWidget().segmentDirectionSpinBox.setValue(int(node.seg_dir))
+        elif node.nodeType == NodeType.splitSegment:
+            self.gui.editorWidget.currentWidget().proportionLineEdit.setText(str(node.proportion))
+        elif node.nodeType == NodeType.mesh:
+            self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
 
-            if node.nodeType == NodeType.init:
-                self.gui.editorWidget.currentWidget().lotXLineEdit.setText(str(node.lotX))
-                self.gui.editorWidget.currentWidget().lotYLineEdit.setText(str(node.lotY))
-                self.gui.editorWidget.currentWidget().lotZLineEdit.setText(str(node.lotZ))
-            if node.nodeType == NodeType.translate:
-                self.gui.editorWidget.currentWidget().translateXLineEdit.setText(str(node.translateX))
-                self.gui.editorWidget.currentWidget().translateYLineEdit.setText(str(node.translateY))
-                self.gui.editorWidget.currentWidget().translateZLineEdit.setText(str(node.translateZ))
-            if node.nodeType == NodeType.rotate:
-                self.gui.editorWidget.currentWidget().rotateXLineEdit.setText(str(node.rotateX))
-                self.gui.editorWidget.currentWidget().rotateYLineEdit.setText(str(node.rotateY))
-                self.gui.editorWidget.currentWidget().rotateZLineEdit.setText(str(node.rotateZ))
-            if node.nodeType == NodeType.scale:
-                self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.scaleX))
-                self.gui.editorWidget.currentWidget().scaleYLineEdit.setText(str(node.scaleY))
-                self.gui.editorWidget.currentWidget().scaleZLineEdit.setText(str(node.scaleZ))
-            #NEW
-            if node.nodeType == NodeType.split:
-                self.gui.editorWidget.currentWidget().segmentCountSpinBox.setValue(int(node.segment))
-                self.gui.editorWidget.currentWidget().segmentDirectionSpinBox.setValue(int(node.seg_dir))
-            if node.nodeType == NodeType.splitSegment:
-                self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.proportion))
-            #New2
-            if node.nodeType == NodeType.mesh:
-                self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
-
-            self.gui.update()
+        self.gui.update()
 
     def setInitialValues(self, lotXValue, lotYValue, lotZValue):
         self.currentSelectedNode.lotX = lotXValue
@@ -136,28 +141,17 @@ class Controller(object):
         self.currentSelectedNode.scaleY = scaleYValue
         self.currentSelectedNode.scaleZ = scaleZValue
 
-        #NEW2
-    def setSegmentValues(self, segmentNum):
-        self.currentSelectedNode.segment = segmentNum
-        #self.currentSelectedNode.add_split_attr(int(segmentNum))
-
-        for x in range (0,segmentNum):
+    def setSplitValues(self, segmentCount, segmentDirection):
+        for x in range (self.currentSelectedNode.segmentCount,segmentCount):
+            newNode = self.graph.addNode(NodeType.splitSegment)
+            self.currentSelectedNode.children.append(newNode)
             self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Segment '+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
-            
-            new_node = self.graph.addNode(NodeType.splitSegment)
+        
+        self.currentSelectedNode.segmentCount = segmentCount
 
-            #No need to do this since it has already been added in addNode!
-            #self.currentSelectedNode.children.append(new_node)
-            
-            self.currentSelectedNode.nodz.createConnection( self.currentSelectedNode.nodzNode, 'Segment '+str(x),new_node.nodzNode, 'Node')
-                    
-    def setDirValues(self, seg_dir):
-        self.currentSelectedNode.seg_dir = seg_dir
-    
-    def setProportionValues(self, proportion):
-        self.currentSelectedNode.proportion = proportion
+    def setSplitSegmentValues(self, proportion):
+        self.currentSelectedNode.children[self.currentSelectedAttribute].proportion = proportion
 
-    #New2
     def setMeshName(self, name):
         self.currentSelectedNode.name=name
         self.currentSelectedNode.is_set=True

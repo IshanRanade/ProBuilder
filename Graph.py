@@ -27,23 +27,21 @@ class NodeType(object):
             return "Split"
         if nodeType == 5:
             return "Mesh"
-        if nodeType == 7:
-            return "Split_Helper"
+        if nodeType == 6:
+            return "Split Segment"
 
 class Node(object):
 
     nodeType = None
-    children = None
+    children = []
 
     nodzNode = None
     nodz = None
 
     graph = None
     
-
     def __init__(self, nodeType, nodz, nodzToNode, isPlug, isSocket):
         self.nodeType = nodeType
-        self.children = []
         self.nodz = nodz
 
         self.nodzNode = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
@@ -53,82 +51,57 @@ class Node(object):
 
 class InitialNode(Node):
 
-    lotX = None
-    lotY = None
-    lotZ = None
+    lotX = 0
+    lotY = 0
+    lotZ = 0
 
     def __init__(self, nodz, nodzToNode):
         super(InitialNode, self).__init__(NodeType.init, nodz, nodzToNode, True, False)
 
-        self.lotX = 0
-        self.lotY = 0
-        self.lotZ = 0
-
 class TranslateNode(Node):
 
-    translateX = None
-    translateY = None
-    translateZ = None
+    translateX = 0
+    translateY = 0
+    translateZ = 0
 
     def __init__(self, nodz, nodzToNode):
         super(TranslateNode, self).__init__(NodeType.translate, nodz, nodzToNode, True, True)
 
-        self.translateX = 0
-        self.translateY = 0
-        self.translateZ = 0
-
 class RotateNode(Node):
 
-    rotateX = None
-    rotateY = None
-    rotateZ = None
+    rotateX = 0
+    rotateY = 0
+    rotateZ = 0
 
     def __init__(self, nodz, nodzToNode):
         super(RotateNode, self).__init__(NodeType.rotate, nodz, nodzToNode, True, True)
 
-        self.rotateX = 0
-        self.rotateY = 0
-        self.rotateZ = 0
-
 class ScaleNode(Node):
 
-    scaleX = None
-    scaleY = None
-    scaleZ = None
+    scaleX = 1
+    scaleY = 1
+    scaleZ = 1
 
     def __init__(self, nodz, nodzToNode):
         super(ScaleNode, self).__init__(NodeType.scale, nodz, nodzToNode, True, True)
 
-        self.scaleX = 1
-        self.scaleY = 1
-        self.scaleZ = 1
-
 class SplitNode(Node):
 
-    #tmp direction here, 0=X, 1=Y, 2=Z       
-    seg_dir= None 
-
-    segment = None
-    graphFather = None
-
-    segmentsArray = []
+    segmentCount = 0
+    #Directions => 0=X, 1=Y, 2=Z
+    seg_dir = 0
 
     def __init__(self, nodz, nodzToNode):
         super(SplitNode, self).__init__(NodeType.split, nodz, nodzToNode, True, True)
 
-        self.seg_dir = 0
-        self.segment = 0
-        self.segmentArray = []
+class SplitSegmentNode(Node):
 
-    def add_split_attr(self, segmentNum):
-        #Clear segment array
-        self.segmentArray = []
+    proportion = 1
 
-        for x in range(0,segmentNum):
-            #self.segmentArray.append( self.nodz.createAttribute(node=self.nodzNode, name='Seg'+str(x), index=-1, preset='attr_preset_1', plug=True, socket=True, dataType=str) )
-            pass
-            #self.nodz.createAttribute(node=self.nodzNode, name='Segment '+str(x), index=-1, preset='attr_preset_3', plug=True, socket=False, dataType=str)
-
+    def __init__(self, nodz, nodzToNode):
+        self.nodeType = NodeType.splitSegment
+        self.nodz = nodz
+        
 class MeshNode(Node):
 
     is_set=None
@@ -138,16 +111,6 @@ class MeshNode(Node):
         super(MeshNode, self).__init__(NodeType.mesh, nodz, nodzToNode, False, True)
 
         self.is_set = False
-
-class SplitSegment(Node):
-
-    proportion = None
-
-    def __init__(self, nodz, nodzToNode):
-        super(SplitSegment, self).__init__(NodeType.splitSegment, nodz, nodzToNode, True, True)
-
-        self.proportion = 1.0
-
 
 class Graph(object):
 
@@ -177,7 +140,7 @@ class Graph(object):
         elif(nodeType == NodeType.split):
             newNode = SplitNode(self.nodz, self.nodzToNode)
         elif(nodeType == NodeType.splitSegment):
-            newNode = SplitSegment(self.nodz, self.nodzToNode)
+            newNode = SplitSegmentNode(self.nodz, self.nodzToNode)
         elif(nodeType == NodeType.mesh):
             newNode = MeshNode(self.nodz, self.nodzToNode)
 
@@ -185,8 +148,11 @@ class Graph(object):
 
         return newNode
 
-    def createEdge(self, srcNodzNode, destNodzNode):
-        self.nodzToNode[srcNodzNode].children.append(self.nodzToNode[destNodzNode])
+    def createEdge(self, srcNodzNode, srcPlugName, destNodzNode, dstSocketName):
+        if(self.nodzToNode[srcNodzNode].nodeType == NodeType.split):
+            self.nodzToNode[srcNodzNode].children[int(srcPlugName[len(srcPlugName)-1])].children.append(self.nodzToNode[destNodzNode])
+        else:
+            self.nodzToNode[srcNodzNode].children.append(self.nodzToNode[destNodzNode])
 
     def createManualEdge(self, srcNode, destNode):
         srcNode.children.append(destNode)

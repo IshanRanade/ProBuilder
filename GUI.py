@@ -32,8 +32,7 @@ class GUI(QtWidgets.QMainWindow):
         self.editorInitial = EditorInitial(self, self.controller)
         self.editorMesh = EditorMesh(self, self.controller)
         self.editorSplit = EditorSplit(self, self.controller)
-        #new
-        self.editorSplit_Helper =  EditorSplit_Helper(self, self.controller)
+        self.editorSplitSegment = EditorSplitSegment(self, self.controller)
 
         self.editorWidget = QtWidgets.QStackedWidget(self)
         self.editorWidget.addWidget(self.editorTranslate)     #0
@@ -43,12 +42,7 @@ class GUI(QtWidgets.QMainWindow):
         self.editorWidget.addWidget(self.editorMesh)          #4
         self.editorWidget.addWidget(self.editorSplit)         #5        
         self.editorWidget.addWidget(self.editor)              #6
-
-        #NEW
-        self.editorWidget.addWidget(self.editorSplit_Helper)  #7
-
-        
-        
+        self.editorWidget.addWidget(self.editorSplitSegment)  #7
         
         self.layout.addWidget(self.editorWidget)
 
@@ -68,6 +62,8 @@ class GUI(QtWidgets.QMainWindow):
     def changeEditorWidgetLayout(self, nodeType):
         if nodeType == "Default":
             self.editorWidget.setCurrentIndex(6)
+        elif nodeType == "SplitSegment":
+            self.editorWidget.setCurrentIndex(7)
         elif nodeType == NodeType.init:
             self.editorWidget.setCurrentIndex(3)
         elif nodeType == NodeType.translate:
@@ -80,9 +76,6 @@ class GUI(QtWidgets.QMainWindow):
             self.editorWidget.setCurrentIndex(5)
         elif nodeType == NodeType.mesh:
             self.editorWidget.setCurrentIndex(4)
-        #NEW!
-        elif nodeType == NodeType.splitSegment:
-            self.editorWidget.setCurrentIndex(7)
 
 class NodePickerWidget(QtWidgets.QWidget):
 
@@ -349,7 +342,7 @@ class EditorSplit(Editor):
         self.segmentCountSpinBox = QtWidgets.QSpinBox()
         self.segmentCountSpinBox.setSingleStep(1)
         self.segmentCountSpinBox.setRange(0, 10)
-        self.segmentCountSpinBox.valueChanged.connect(self.setCountValue)
+        self.segmentCountSpinBox.valueChanged.connect(self.setValues)
         self.segmentCount.addWidget(self.segmentCountLabel)
         self.segmentCount.addWidget(self.segmentCountSpinBox)
         self.layout.addLayout(self.segmentCount)
@@ -359,21 +352,19 @@ class EditorSplit(Editor):
         self.segmentDirectionSpinBox = QtWidgets.QSpinBox()
         self.segmentDirectionSpinBox.setSingleStep(1)
         self.segmentDirectionSpinBox.setRange(0, 2)
-        self.segmentDirectionSpinBox.valueChanged.connect(self.setDirection)
+        self.segmentDirectionSpinBox.valueChanged.connect(self.setValues)
         self.segmentDirection.addWidget(self.segmentDirectionLabel)
         self.segmentDirection.addWidget(self.segmentDirectionSpinBox)
         self.layout.addLayout(self.segmentDirection)
 
         self.setLayout(self.layout)
 
-    def setCountValue(self):
-        self.controller.setSegmentValues(self.segmentCountSpinBox.value())
-    def setDirection(self):
-        self.controller.setDirValues(self.segmentDirectionSpinBox.value())
+    def setValues(self):
+        self.controller.setSplitValues(self.segmentCountSpinBox.value(), self.segmentDirectionSpinBox.value())
 
-class EditorSegment(Editor):
+class EditorSplitSegment(Editor):
     def __init__(self, parent, controller):
-        super(EditorSegment, self).__init__(parent, controller)
+        super(EditorSplitSegment, self).__init__(parent, controller)
 
         self.controller = controller
 
@@ -389,26 +380,4 @@ class EditorSegment(Editor):
         self.setLayout(self.layout)
 
     def setValues(self):
-        self.controller.setProportionValues(float(self.proportionLineEdit.text()))
-
-#tmp class
-class EditorSplit_Helper(Editor):
-
-    def __init__(self, parent, controller):
-        super(EditorSplit_Helper, self).__init__(parent, controller)
-
-        self.controller = controller
-
-        self.scaleX = QtWidgets.QHBoxLayout(self)
-        self.scaleXLabel = QtWidgets.QLabel("Proportion: ")
-        self.scaleXLineEdit = QtWidgets.QLineEdit()
-        self.scaleXLineEdit.setValidator(QtGui.QDoubleValidator(-1000,1000, 5,self))
-        self.scaleXLineEdit.textEdited.connect(self.setValues)
-        self.scaleX.addWidget(self.scaleXLabel)
-        self.scaleX.addWidget(self.scaleXLineEdit)
-        self.layout.addLayout(self.scaleX)
-
-        self.setLayout(self.layout)
-
-    def setValues(self):
-        self.controller.setProportionValues(float(self.scaleXLineEdit.text()))
+        self.controller.setSplitSegmentValues(float(self.proportionLineEdit.text()))
