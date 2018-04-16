@@ -439,12 +439,10 @@ class Nodz(QtWidgets.QGraphicsView):
             nodeBottomLeft = self.viewport().mapToParent(self.mapFromScene(selected_nodes[0].mapToScene(selected_nodes[0].boundingRect().bottomLeft())))
 
             borderDist = (selected_nodes[0].baseHeight - selected_nodes[0].radius) * self.zoomValue
-            print self.zoomValue
             if pointerPos.y() > nodeTopLeft.y() + borderDist * self.zoomValue:
                 if pointerPos.y() < nodeBottomLeft.y() - borderDist - selected_nodes[0].attrHeight * self.zoomValue:
                     attrNumFromTop = (pointerPos.y() - nodeTopLeft.y() - borderDist) / (selected_nodes[0].attrHeight * self.zoomValue)
-                    self.signal_AttrSelected.emit(selected_nodes[0], int(attrNumFromTop))
-                    print attrNumFromTop
+                    self.signal_AttrSelected.emit(selected_nodes[0], min(selected_nodes[0].attrCount - 1, max(0, int(attrNumFromTop))))
                     return
 
             # If the "Node" attribute was selected then just emit the node
