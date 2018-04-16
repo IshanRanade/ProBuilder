@@ -88,12 +88,13 @@ class GUI(QtWidgets.QMainWindow):
 
     def setNextNodePosition(self, node, selectedNode, selectedAttribute):
         if selectedNode is not None and selectedAttribute is not None:
-            deltaX = selectedNode.nodzNode.baseWidth + 25
-            deltaY = (selectedAttribute) * selectedNode.nodzNode.attrHeight
+            deltaX = selectedNode.nodzNode.baseWidth + 50
+            deltaY = (selectedNode.nodzNode.attrCount - 1) * selectedNode.nodzNode.attrHeight
+            deltaY -= (selectedNode.nodzNode.baseHeight + 70) * (selectedNode.nodzNode.attrCount - selectedAttribute - 1)
             newPos = QtCore.QPoint(selectedNode.nodzNode.x() + deltaX, selectedNode.nodzNode.y() + deltaY)
             node.nodzNode.setPos(newPos)
         elif selectedNode is not None:
-            deltaX = selectedNode.nodzNode.baseWidth + 25
+            deltaX = selectedNode.nodzNode.baseWidth + 50
             deltaY = (selectedNode.nodzNode.attrCount - 1) * selectedNode.nodzNode.attrHeight
             newPos = QtCore.QPoint(selectedNode.nodzNode.x() + deltaX, selectedNode.nodzNode.y() + deltaY)
             node.nodzNode.setPos(newPos)
