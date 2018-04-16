@@ -1,6 +1,6 @@
 {
     // General > Edit values BUT do not delete.
-    "scene_width": 4000,
+    "scene_width": 5000,
     "scene_height": 3000,
     "grid_size": 36,
     "antialiasing": true,

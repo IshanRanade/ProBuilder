@@ -3,6 +3,7 @@ import nodz_main
 
 from Graph import NodeType
 
+maximumLeftSideSize = 200
 
 class GUI(QtWidgets.QMainWindow):
 
@@ -19,11 +20,13 @@ class GUI(QtWidgets.QMainWindow):
 
         self.layout = QtWidgets.QHBoxLayout(self)
 
+        self.leftSide = QtWidgets.QVBoxLayout(self)
+
         self.generateWidget = Generate(self, self.controller)
-        self.layout.addWidget(self.generateWidget)
+        self.leftSide.addWidget(self.generateWidget)
 
         self.nodePickerWidget = NodePickerWidget(self, self.controller)
-        self.layout.addWidget(self.nodePickerWidget)
+        self.leftSide.addWidget(self.nodePickerWidget)
 
         self.editor = Editor(self, self.controller)
         self.editorTranslate = EditorTranslate(self, self.controller)
@@ -46,12 +49,14 @@ class GUI(QtWidgets.QMainWindow):
         self.editorWidget.addWidget(self.editorSplitSegment)  #7
         self.editorWidget.addWidget(self.editorRepeat)        #8
         
-        self.layout.addWidget(self.editorWidget)
+        self.leftSide.addWidget(self.editorWidget)
 
         self.editorWidget.setCurrentIndex(6)
 
         self.nodzWidget = nodz_main.Nodz(self)
         self.nodzWidget.initialize()
+
+        self.layout.addLayout(self.leftSide)
         self.layout.addWidget(self.nodzWidget)
 
         self.window = QtWidgets.QWidget(self)
@@ -100,6 +105,8 @@ class NodePickerWidget(QtWidgets.QWidget):
     def __init__(self, parent, controller):
         super(NodePickerWidget, self).__init__(parent)
 
+        self.setMaximumWidth(maximumLeftSideSize)
+
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
 
@@ -138,6 +145,8 @@ class Generate(QtWidgets.QWidget):
     def __init__(self, parent, controller):
         super(Generate, self).__init__(parent)
 
+        self.setMaximumWidth(maximumLeftSideSize)
+
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
 
@@ -155,6 +164,8 @@ class Editor(QtWidgets.QWidget):
 
     def __init__(self, parent, controller):
         super(Editor, self).__init__(parent)
+
+        self.setMaximumWidth(maximumLeftSideSize)
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
