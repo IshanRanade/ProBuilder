@@ -26,8 +26,9 @@ class Controller(object):
 
         self.gui.setWindowOpacity(0.8)
         
-
+    def testGraph1(self):
         # Create a test graph
+        translate1 = self.graph.addNode(NodeType.translate)
         """
         translate1 = self.graph.addNode(NodeType.translate)
         translate1.translateX, translate1.translateY, translate1.translateZ = 0, 0, 6
@@ -89,7 +90,8 @@ class Controller(object):
         self.graph.createEdge(srcNode, srcPlugName, destNode, dstSocketName)
 
     def addNode(self, nodeType):
-        self.graph.addNode(nodeType)
+        newNode = self.graph.addNode(nodeType)
+        self.gui.setNextNodePosition(newNode, self.currentSelectedNode, self.currentSelectedAttribute)
 
     def generateMesh(self):
         self.graph.generateMesh()

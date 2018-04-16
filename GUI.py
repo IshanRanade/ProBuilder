@@ -81,6 +81,20 @@ class GUI(QtWidgets.QMainWindow):
         elif nodeType == NodeType.repeat:
             self.editorWidget.setCurrentIndex(8)
 
+    def setNextNodePosition(self, node, selectedNode, selectedAttribute):
+        if selectedNode is not None and selectedAttribute is not None:
+            deltaX = selectedNode.nodzNode.baseWidth + 25
+            deltaY = (selectedAttribute) * selectedNode.nodzNode.attrHeight
+            newPos = QtCore.QPoint(selectedNode.nodzNode.x() + deltaX, selectedNode.nodzNode.y() + deltaY)
+            node.nodzNode.setPos(newPos)
+        elif selectedNode is not None:
+            deltaX = selectedNode.nodzNode.baseWidth + 25
+            deltaY = (selectedNode.nodzNode.attrCount - 1) * selectedNode.nodzNode.attrHeight
+            newPos = QtCore.QPoint(selectedNode.nodzNode.x() + deltaX, selectedNode.nodzNode.y() + deltaY)
+            node.nodzNode.setPos(newPos)
+        else:
+            node.nodzNode.setPos(self.nodzWidget.mapToScene(self.nodzWidget.viewport().rect().center()))
+
 class NodePickerWidget(QtWidgets.QWidget):
 
     def __init__(self, parent, controller):
