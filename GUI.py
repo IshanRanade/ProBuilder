@@ -33,6 +33,7 @@ class GUI(QtWidgets.QMainWindow):
         self.editorMesh = EditorMesh(self, self.controller)
         self.editorSplit = EditorSplit(self, self.controller)
         self.editorSplitSegment = EditorSplitSegment(self, self.controller)
+        self.editorRepeat = EditorRepeat(self, self.controller)
 
         self.editorWidget = QtWidgets.QStackedWidget(self)
         self.editorWidget.addWidget(self.editorTranslate)     #0
@@ -43,6 +44,7 @@ class GUI(QtWidgets.QMainWindow):
         self.editorWidget.addWidget(self.editorSplit)         #5        
         self.editorWidget.addWidget(self.editor)              #6
         self.editorWidget.addWidget(self.editorSplitSegment)  #7
+        self.editorWidget.addWidget(self.editorRepeat)        #8
         
         self.layout.addWidget(self.editorWidget)
 
@@ -76,13 +78,13 @@ class GUI(QtWidgets.QMainWindow):
             self.editorWidget.setCurrentIndex(5)
         elif nodeType == NodeType.mesh:
             self.editorWidget.setCurrentIndex(4)
+        elif nodeType == NodeType.repeat:
+            self.editorWidget.setCurrentIndex(8)
 
 class NodePickerWidget(QtWidgets.QWidget):
 
     def __init__(self, parent, controller):
         super(NodePickerWidget, self).__init__(parent)
-
-        #self.setStyleSheet("background-color: black;")
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
@@ -107,9 +109,13 @@ class NodePickerWidget(QtWidgets.QWidget):
         self.button4.clicked.connect(lambda: controller.addNode(NodeType.split))
         self.layout.addWidget(self.button4)
 
-        self.button5 = QtWidgets.QPushButton("Mesh")
-        self.button5.clicked.connect(lambda: controller.addNode(NodeType.mesh))
+        self.button5 = QtWidgets.QPushButton("Repeat")
+        self.button5.clicked.connect(lambda: controller.addNode(NodeType.repeat))
         self.layout.addWidget(self.button5)
+
+        self.button6 = QtWidgets.QPushButton("Mesh")
+        self.button6.clicked.connect(lambda: controller.addNode(NodeType.mesh))
+        self.layout.addWidget(self.button6)
 
         self.setLayout(self.layout)
 
@@ -356,8 +362,7 @@ class EditorSplit(Editor):
         self.setLayout(self.layout)
 
     def setValues(self):
-        if self.segmentCountSpinBox not in ["", "-"] and self.segmentDirectionSpinBox not in ["", "-"]:
-            self.controller.setSplitValues(self.segmentCountSpinBox.value(), self.segmentDirectionSpinBox.value())
+        self.controller.setSplitValues(self.segmentCountSpinBox.value(), self.segmentDirectionSpinBox.value())
 
 class EditorSplitSegment(Editor):
     def __init__(self, parent, controller):
@@ -368,7 +373,7 @@ class EditorSplitSegment(Editor):
         self.proportion = QtWidgets.QHBoxLayout(self)
         self.proportionLabel = QtWidgets.QLabel("Proportion: ")
         self.proportionLineEdit = QtWidgets.QLineEdit()
-        self.proportionLineEdit.setValidator(QtGui.QDoubleValidator(-1000,1000, 5,self))
+        self.proportionLineEdit.setValidator(QtGui.QDoubleValidator(0,1000,5,self))
         self.proportionLineEdit.textEdited.connect(self.setValues)
         self.proportion.addWidget(self.proportionLabel)
         self.proportion.addWidget(self.proportionLineEdit)
@@ -378,3 +383,22 @@ class EditorSplitSegment(Editor):
 
     def setValues(self):
         self.controller.setSplitSegmentValues(float(self.proportionLineEdit.text()))
+
+class EditorRepeat(Editor):
+    def __init__(self, parent, controller):
+        super(EditorRepeat, self).__init__(parent, controller)
+
+        self.controller = controller
+
+        self.direction = QtWidgets.QHBoxLayout(self)
+        self.directionLabel = QtWidgets.QLabel("Direction: ")
+        self.directionSpinBox = QtWidgets.QSpinBox()
+        self.directionSpinBox.setSingleStep(1)
+        self.directionSpinBox.setRange(0, 2)
+        self.directionSpinBox.valueChanged.connect(self.setValues)
+        self.direction.addWidget(self.directionLabel)
+        self.direction.addWidget(self.directionSpinBox)
+        self.layout.addLayout(self.direction)
+
+    def setValues(self):
+        self.controller.setRepeatValues(self.directionSpinBox.value())

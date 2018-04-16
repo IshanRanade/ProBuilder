@@ -12,6 +12,7 @@ class NodeType(object):
     split = 4
     mesh = 5
     splitSegment = 6
+    repeat = 7
 
     @staticmethod
     def getString(nodeType):
@@ -29,6 +30,9 @@ class NodeType(object):
             return "Mesh"
         if nodeType == 6:
             return "Split Segment"
+        if nodeType == 7:
+            return "Repeat"
+          
 
 class Node(object):
     
@@ -48,9 +52,9 @@ class InitialNode(Node):
     def __init__(self, nodz, nodzToNode):
         super(InitialNode, self).__init__(NodeType.init, nodz, nodzToNode, True, False)
 
-        self.lotX = 0
-        self.lotY = 0
-        self.lotZ = 0
+        self.lotX = 50
+        self.lotY = 50
+        self.lotZ = 50
 
 class TranslateNode(Node):
 
@@ -109,6 +113,13 @@ class MeshNode(Node):
 
         self.is_set = False
 
+class RepeatNode(Node):
+
+    def __init__(self, nodz, nodzToNode):
+        super(RepeatNode, self).__init__(NodeType.repeat, nodz, nodzToNode, True, True)
+
+        self.direction = 0
+
 class Graph(object):
 
     def __init__(self, nodz):
@@ -135,6 +146,8 @@ class Graph(object):
             newNode = SplitSegmentNode(self.nodz, self.nodzToNode)
         elif(nodeType == NodeType.mesh):
             newNode = MeshNode(self.nodz, self.nodzToNode)
+        elif(nodeType == NodeType.repeat):
+            newNode = RepeatNode(self.nodz, self.nodzToNode)
 
         self.nodes.add(newNode)
 
@@ -170,7 +183,6 @@ class Graph(object):
                 print ""
 
         print "----------------"
-
 
     def generateMesh(self):
         # First delete all the existing geometry in the scene

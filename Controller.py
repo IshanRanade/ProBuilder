@@ -92,8 +92,7 @@ class Controller(object):
         self.graph.addNode(nodeType)
 
     def generateMesh(self):
-        #self.graph.generateMesh()
-        self.graph.printGraph()
+        self.graph.generateMesh()
 
     def populateGUIEditor(self, node):
         if node.nodeType == NodeType.init:
@@ -119,6 +118,8 @@ class Controller(object):
             self.gui.editorWidget.currentWidget().proportionLineEdit.setText(str(node.proportion))
         elif node.nodeType == NodeType.mesh:
             self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
+        elif node.nodeType == NodeType.repeat:
+            self.gui.editorWidget.currentWidget().directionSpinBox.setValue(node.direction)
 
         self.gui.update()
 
@@ -155,6 +156,9 @@ class Controller(object):
 
     def setSplitSegmentValues(self, proportion):
         self.currentSelectedNode.children[self.currentSelectedAttribute].proportion = proportion
+
+    def setRepeatValues(self, direction):
+        self.currentSelectedNode.direction = direction
 
     def setMeshName(self, name):
         self.currentSelectedNode.name=name
