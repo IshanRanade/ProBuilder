@@ -31,76 +31,73 @@ class NodeType(object):
             return "Split Segment"
 
 class Node(object):
-
-    nodeType = None
-    children = []
-
-    nodzNode = None
-    nodz = None
-
-    graph = None
     
     def __init__(self, nodeType, nodz, nodzToNode, isPlug, isSocket):
         self.nodeType = nodeType
-        self.nodz = nodz
-
+        self.children = []
         self.nodzNode = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
+        self.nodz = nodz
+        self.graph = None
+        
         nodz.createAttribute(node=self.nodzNode, name='Node', index=-1, preset='attr_preset_1', plug=isPlug, socket=isSocket, dataType=str)
 
         nodzToNode[self.nodzNode] = self
 
 class InitialNode(Node):
 
-    lotX = 0
-    lotY = 0
-    lotZ = 0
-
     def __init__(self, nodz, nodzToNode):
         super(InitialNode, self).__init__(NodeType.init, nodz, nodzToNode, True, False)
 
-class TranslateNode(Node):
+        self.lotX = 0
+        self.lotY = 0
+        self.lotZ = 0
 
-    translateX = 0
-    translateY = 0
-    translateZ = 0
+class TranslateNode(Node):
 
     def __init__(self, nodz, nodzToNode):
         super(TranslateNode, self).__init__(NodeType.translate, nodz, nodzToNode, True, True)
 
-class RotateNode(Node):
+        self.translateX = 0
+        self.translateY = 0
+        self.translateZ = 0
 
-    rotateX = 0
-    rotateY = 0
-    rotateZ = 0
+class RotateNode(Node):
 
     def __init__(self, nodz, nodzToNode):
         super(RotateNode, self).__init__(NodeType.rotate, nodz, nodzToNode, True, True)
 
-class ScaleNode(Node):
+        self.rotateX = 0
+        self.rotateY = 0
+        self.rotateZ = 0
 
-    scaleX = 1
-    scaleY = 1
-    scaleZ = 1
+class ScaleNode(Node):
 
     def __init__(self, nodz, nodzToNode):
         super(ScaleNode, self).__init__(NodeType.scale, nodz, nodzToNode, True, True)
 
-class SplitNode(Node):
+        self.scaleX = 1
+        self.scaleY = 1
+        self.scaleZ = 1
 
-    segmentCount = 0
-    #Directions => 0=X, 1=Y, 2=Z
-    seg_dir = 0
+class SplitNode(Node):
 
     def __init__(self, nodz, nodzToNode):
         super(SplitNode, self).__init__(NodeType.split, nodz, nodzToNode, True, True)
 
-class SplitSegmentNode(Node):
+        self.segmentCount = 0
+        #Directions => 0=X, 1=Y, 2=Z
+        self.segmentDirection = 0
 
-    proportion = 1
+
+class SplitSegmentNode(Node):
 
     def __init__(self, nodz, nodzToNode):
         self.nodeType = NodeType.splitSegment
+        self.children = []
         self.nodz = nodz
+        self.graph = None
+
+        self.proportion = 1
         
 class MeshNode(Node):
 
@@ -113,11 +110,6 @@ class MeshNode(Node):
         self.is_set = False
 
 class Graph(object):
-
-    root = None
-    nodz = None
-    nodes = None
-    nodzToNode = None
 
     def __init__(self, nodz):
         self.nodzToNode = {}
@@ -149,7 +141,7 @@ class Graph(object):
         return newNode
 
     def createEdge(self, srcNodzNode, srcPlugName, destNodzNode, dstSocketName):
-        if(self.nodzToNode[srcNodzNode].nodeType == NodeType.split):
+        if self.nodzToNode[srcNodzNode].nodeType == NodeType.split and "Segment" in srcPlugName:
             self.nodzToNode[srcNodzNode].children[int(srcPlugName[len(srcPlugName)-1])].children.append(self.nodzToNode[destNodzNode])
         else:
             self.nodzToNode[srcNodzNode].children.append(self.nodzToNode[destNodzNode])
@@ -165,7 +157,7 @@ class Graph(object):
             curr = queue.pop()
 
             for child in curr.children:
-                print curr.nodzNode.name + " -> " + child.nodzNode.name
+                print NodeType.getString(curr.nodeType) + " -> " + NodeType.getString(child.nodeType)
 
                 attrsParent = vars(curr)
                 attrsChild = vars(child)
@@ -176,6 +168,8 @@ class Graph(object):
                 queue.append(child)
 
                 print ""
+
+        print "----------------"
 
 
     def generateMesh(self):
@@ -238,7 +232,7 @@ class Graph(object):
                     
             #segment directions
             #X dir
-            if node.seg_dir%3 == 0:
+            if node.segmentDirection%3 == 0:
 
                 start=translate[0]-scale[0]/2.0
                 
@@ -257,7 +251,7 @@ class Graph(object):
                     self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
 
             #Y dir          
-            elif node.seg_dir%3 == 1:
+            elif node.segmentDirection%3 == 1:
 
                 start=translate[1]-scale[1]/2.0
                 
@@ -276,7 +270,7 @@ class Graph(object):
                     self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
 
             #Z dir            
-            elif node.seg_dir%3 == 2:
+            elif node.segmentDirection%3 == 2:
                     
                 start=translate[2]-scale[2]/2.0
                 

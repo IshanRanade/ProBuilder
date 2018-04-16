@@ -92,7 +92,8 @@ class Controller(object):
         self.graph.addNode(nodeType)
 
     def generateMesh(self):
-        self.graph.generateMesh()
+        #self.graph.generateMesh()
+        self.graph.printGraph()
 
     def populateGUIEditor(self, node):
         if node.nodeType == NodeType.init:
@@ -113,7 +114,7 @@ class Controller(object):
             self.gui.editorWidget.currentWidget().scaleZLineEdit.setText(str(node.scaleZ))
         elif node.nodeType == NodeType.split:
             self.gui.editorWidget.currentWidget().segmentCountSpinBox.setValue(int(node.segmentCount))
-            self.gui.editorWidget.currentWidget().segmentDirectionSpinBox.setValue(int(node.seg_dir))
+            self.gui.editorWidget.currentWidget().segmentDirectionSpinBox.setValue(int(node.segmentDirection))
         elif node.nodeType == NodeType.splitSegment:
             self.gui.editorWidget.currentWidget().proportionLineEdit.setText(str(node.proportion))
         elif node.nodeType == NodeType.mesh:
@@ -142,12 +143,15 @@ class Controller(object):
         self.currentSelectedNode.scaleZ = scaleZValue
 
     def setSplitValues(self, segmentCount, segmentDirection):
-        for x in range (self.currentSelectedNode.segmentCount,segmentCount):
+        for x in range(self.currentSelectedNode.segmentCount, segmentCount):
             newNode = self.graph.addNode(NodeType.splitSegment)
             self.currentSelectedNode.children.append(newNode)
             self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Segment '+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
         
+        self.currentSelectedNode.segmentDirection = segmentDirection
         self.currentSelectedNode.segmentCount = segmentCount
+
+        print self.currentSelectedNode.children
 
     def setSplitSegmentValues(self, proportion):
         self.currentSelectedNode.children[self.currentSelectedAttribute].proportion = proportion

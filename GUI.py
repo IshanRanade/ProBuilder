@@ -88,7 +88,6 @@ class NodePickerWidget(QtWidgets.QWidget):
         self.layout.setAlignment(QtCore.Qt.AlignTop)
 
         self.label = QtWidgets.QLabel("Create Node:")
-        self.label.setMinimumWidth(150)
         self.label.setAlignment(QtCore.Qt.AlignHCenter)
         self.layout.addWidget(self.label)
 
@@ -190,8 +189,6 @@ class EditorRotate(Editor):
 
     def __init__(self, parent, controller):
         super(EditorRotate, self).__init__(parent, controller)
-
-        #print "hello"
 
         self.controller = controller
 
@@ -308,7 +305,6 @@ class EditorInitial(Editor):
         if self.lotXLineEdit.text() not in ["-", ""] and self.lotYLineEdit.text() not in ["-", ""] and self.lotZLineEdit.text() not in ["-", ""]:
             self.controller.setInitialValues(int(self.lotXLineEdit.text()), int(self.lotYLineEdit.text()), int(self.lotZLineEdit.text()))
 
-#New2
 class EditorMesh(Editor):
 
     def __init__(self, parent, controller):
@@ -360,7 +356,8 @@ class EditorSplit(Editor):
         self.setLayout(self.layout)
 
     def setValues(self):
-        self.controller.setSplitValues(self.segmentCountSpinBox.value(), self.segmentDirectionSpinBox.value())
+        if self.segmentCountSpinBox not in ["", "-"] and self.segmentDirectionSpinBox not in ["", "-"]:
+            self.controller.setSplitValues(self.segmentCountSpinBox.value(), self.segmentDirectionSpinBox.value())
 
 class EditorSplitSegment(Editor):
     def __init__(self, parent, controller):
