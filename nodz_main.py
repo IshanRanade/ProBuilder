@@ -69,6 +69,9 @@ class Nodz(QtWidgets.QGraphicsView):
         self.currentState = 'DEFAULT'
         self.pressedKeys = list()
 
+        # Zoom
+        self.zoomValue = 1.0
+
     def wheelEvent(self, event):
         """
         Zoom in the view with the mouse wheel.
@@ -84,6 +87,8 @@ class Nodz(QtWidgets.QGraphicsView):
             zoomFactor = inFactor
         else:
             zoomFactor = outFactor
+
+        self.zoomValue *= zoomFactor
 
         self.scale(zoomFactor, zoomFactor)
         self.currentState = 'DEFAULT'
@@ -433,11 +438,13 @@ class Nodz(QtWidgets.QGraphicsView):
             nodeTopLeft = self.viewport().mapToParent(self.mapFromScene(selected_nodes[0].mapToScene(selected_nodes[0].boundingRect().topLeft())))
             nodeBottomLeft = self.viewport().mapToParent(self.mapFromScene(selected_nodes[0].mapToScene(selected_nodes[0].boundingRect().bottomLeft())))
 
-            borderDist = selected_nodes[0].baseHeight - selected_nodes[0].radius
-            if pointerPos.y() > nodeTopLeft.y() + borderDist:
-                if pointerPos.y() < nodeBottomLeft.y() - borderDist - selected_nodes[0].attrHeight:
-                    attrNumFromTop = (pointerPos.y() - nodeTopLeft.y() - borderDist) / selected_nodes[0].attrHeight
-                    self.signal_AttrSelected.emit(selected_nodes[0], attrNumFromTop)
+            borderDist = (selected_nodes[0].baseHeight - selected_nodes[0].radius) * self.zoomValue
+            print self.zoomValue
+            if pointerPos.y() > nodeTopLeft.y() + borderDist * self.zoomValue:
+                if pointerPos.y() < nodeBottomLeft.y() - borderDist - selected_nodes[0].attrHeight * self.zoomValue:
+                    attrNumFromTop = (pointerPos.y() - nodeTopLeft.y() - borderDist) / (selected_nodes[0].attrHeight * self.zoomValue)
+                    self.signal_AttrSelected.emit(selected_nodes[0], int(attrNumFromTop))
+                    print attrNumFromTop
                     return
 
             # If the "Node" attribute was selected then just emit the node
