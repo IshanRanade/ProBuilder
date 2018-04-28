@@ -3,8 +3,6 @@ import nodz_main
 
 from Graph import NodeType
 
-maximumLeftSideSize = 200
-
 class GUI(QtWidgets.QMainWindow):
 
     controller = None
@@ -56,7 +54,12 @@ class GUI(QtWidgets.QMainWindow):
         self.nodzWidget = nodz_main.Nodz(self)
         self.nodzWidget.initialize()
 
-        self.layout.addLayout(self.leftSide)
+        # Put the left side layout into a widget so we can restrict
+        # the size of the widget because we can't restrict layouts
+        self.leftSideWidget = QtWidgets.QWidget()
+        self.leftSideWidget.setMaximumWidth(200)
+        self.leftSideWidget.setLayout(self.leftSide)
+        self.layout.addWidget(self.leftSideWidget)
         self.layout.addWidget(self.nodzWidget)
 
         self.window = QtWidgets.QWidget(self)
@@ -106,8 +109,6 @@ class NodePickerWidget(QtWidgets.QWidget):
     def __init__(self, parent, controller):
         super(NodePickerWidget, self).__init__(parent)
 
-        self.setMaximumWidth(maximumLeftSideSize)
-
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
 
@@ -146,8 +147,6 @@ class Generate(QtWidgets.QWidget):
     def __init__(self, parent, controller):
         super(Generate, self).__init__(parent)
 
-        self.setMaximumWidth(maximumLeftSideSize)
-
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
 
@@ -165,8 +164,6 @@ class Editor(QtWidgets.QWidget):
 
     def __init__(self, parent, controller):
         super(Editor, self).__init__(parent)
-
-        self.setMaximumWidth(maximumLeftSideSize)
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
