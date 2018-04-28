@@ -159,9 +159,9 @@ class Graph(object):
         else:
             self.nodzToNode[srcNodzNode].children.append(self.nodzToNode[destNodzNode])
 
-    def createManualEdge(self, srcNode, destNode):
+    def createManualEdge(self, srcNode, srcAttrib, destNode, destAttrib):
         srcNode.children.append(destNode)
-        self.nodz.createConnection(srcNode.nodzNode, 'Node', destNode.nodzNode, 'Node')
+        self.nodz.createConnection(srcNode.nodzNode, srcAttrib, destNode.nodzNode, destAttrib)
 
     def printGraph(self):
         queue = [self.root]

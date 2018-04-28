@@ -28,7 +28,20 @@ class Controller(object):
         
     def testGraph1(self):
         # Create a test graph
+        self.currentSelectedNode = self.graph.root
         translate1 = self.graph.addNode(NodeType.translate)
+        self.gui.setNextNodePosition(translate1, self.currentSelectedNode, None)
+        self.graph.createManualEdge(self.currentSelectedNode, "Node", translate1, "Node")
+
+        self.currentSelectedNode = translate1
+        split1 = self.graph.addNode(NodeType.split)
+        self.gui.setNextNodePosition(split1, self.currentSelectedNode, None)
+        self.graph.createManualEdge(self.currentSelectedNode, "Node", split1, "Node")
+
+        self.currentSelectedNode = split1
+        self.setSplitValues(5, split1.segmentDirection)
+        split1.segmentCount = 5
+
         """
         translate1 = self.graph.addNode(NodeType.translate)
         translate1.translateX, translate1.translateY, translate1.translateZ = 0, 0, 6
@@ -153,8 +166,6 @@ class Controller(object):
         
         self.currentSelectedNode.segmentDirection = segmentDirection
         self.currentSelectedNode.segmentCount = segmentCount
-
-        print self.currentSelectedNode.children
 
     def setSplitSegmentValues(self, proportion):
         self.currentSelectedNode.children[self.currentSelectedAttribute].proportion = proportion

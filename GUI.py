@@ -53,6 +53,7 @@ class GUI(QtWidgets.QMainWindow):
 
         self.nodzWidget = nodz_main.Nodz(self)
         self.nodzWidget.initialize()
+        self.nodzWidget.setMinimumSize(1000, 800)
 
         # Put the left side layout into a widget so we can restrict
         # the size of the widget because we can't restrict layouts
@@ -157,6 +158,10 @@ class Generate(QtWidgets.QWidget):
         self.button = QtWidgets.QPushButton("Generate")
         self.button.clicked.connect(controller.generateMesh)
         self.layout.addWidget(self.button)
+
+        self.button2 = QtWidgets.QPushButton("Sample 1")
+        self.button2.clicked.connect(controller.testGraph1)
+        self.layout.addWidget(self.button2)
 
         self.setLayout(self.layout)
 
