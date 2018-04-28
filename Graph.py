@@ -86,13 +86,13 @@ class ScaleNode(Node):
 class SplitNode(Node):
 
     def __init__(self, nodz, nodzToNode):
-        super(SplitNode, self).__init__(NodeType.split, nodz, nodzToNode, True, True)
+        super(SplitNode, self).__init__(NodeType.split, nodz, nodzToNode, False, True)
 
         self.segmentCount = 0
         #Directions => 0=X, 1=Y, 2=Z
         self.segmentDirection = 0
 
-
+  
 class SplitSegmentNode(Node):
 
     def __init__(self, nodz, nodzToNode):
@@ -160,7 +160,7 @@ class Graph(object):
             self.nodzToNode[srcNodzNode].children.append(self.nodzToNode[destNodzNode])
 
     def createManualEdge(self, srcNode, srcAttrib, destNode, destAttrib):
-        srcNode.children.append(destNode)
+        #srcNode.children.append(destNode)
         self.nodz.createConnection(srcNode.nodzNode, srcAttrib, destNode.nodzNode, destAttrib)
 
     def printGraph(self):
@@ -168,6 +168,17 @@ class Graph(object):
 
         while len(queue) > 0:
             curr = queue.pop()
+
+            if len(curr.children) == 0:
+                print NodeType.getString(curr.nodeType)
+
+                attrsParent = vars(curr)
+                attrsChild = vars(child)
+
+                print ', '.join("%s: %s" % item for item in attrsParent.items())
+                print ', '.join("%s: %s" % item for item in attrsChild.items()) 
+
+                print ""
 
             for child in curr.children:
                 print NodeType.getString(curr.nodeType) + " -> " + NodeType.getString(child.nodeType)
@@ -203,9 +214,7 @@ class Graph(object):
             rotate = LinAlg.quaternion_multiply(rotate, LinAlg.quaternion_from_euler(node.rotateX, node.rotateY, node.rotateZ,'sxyz'))
         elif node.nodeType == NodeType.scale:
             scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
-            
         elif node.nodeType == NodeType.mesh:
-            #NEW2
             if(node.is_set):
                 cmds.select( cmds.duplicate(node.name) )
                 #Reset translate
@@ -232,8 +241,7 @@ class Graph(object):
                 cmds.rotate(ax,ay,az)
 
             is_gen=True
-
-        #NEW2!!!
+            
         elif node.nodeType == NodeType.split:
                         
             total_weight = 0.0

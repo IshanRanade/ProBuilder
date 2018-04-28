@@ -39,8 +39,10 @@ class Controller(object):
         self.graph.createManualEdge(self.currentSelectedNode, "Node", split1, "Node")
 
         self.currentSelectedNode = split1
-        self.setSplitValues(5, split1.segmentDirection)
-        split1.segmentCount = 5
+        self.setSplitValues(3, split1.segmentDirection)
+        split1.segmentCount = 3
+
+
 
         """
         translate1 = self.graph.addNode(NodeType.translate)
@@ -137,6 +139,9 @@ class Controller(object):
             self.gui.editorWidget.currentWidget().directionSpinBox.setValue(node.direction)
 
         self.gui.update()
+
+    def printGraph(self):
+        self.graph.printGraph()
 
     def setInitialValues(self, lotXValue, lotYValue, lotZValue):
         self.currentSelectedNode.lotX = lotXValue
