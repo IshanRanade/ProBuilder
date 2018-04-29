@@ -122,7 +122,7 @@ class RepeatNode(Node):
         super(RepeatNode, self).__init__(NodeType.repeat, nodz, nodzToNode, True, True)
 
         self.direction = 0
-        self.count = -1
+        self.count = 5
         self.percentage = 20
 
 class Graph(object):
@@ -249,7 +249,18 @@ class Graph(object):
                 cmds.rotate(ax,ay,az)
         # Repeat Node
         elif node.nodeType == NodeType.repeat:
-            pass
+            if len(node.children) > 0:
+                maxRange = min(int(node.count), int(100.0 / (1.0 * node.percentage)))
+                for i in range(0, maxRange):
+                    tempTranslate = np.array(translate)
+                    tempTranslate[node.direction] += scale[node.direction] * i * (1.0 * node.percentage / 100.0)
+
+                    tempScale = np.array(scale)
+                    tempScale[node.direction] = scale[node.direction] * (1.0 * node.percentage / 100.0)
+
+                    self.generateMeshHelper(node.children[0], np.array(tempTranslate), np.array(rotate), np.array(tempScale))
+
+            return
         # Split Segment Node
         elif node.nodeType == NodeType.splitSegment:
             totalWeight = 0.0

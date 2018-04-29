@@ -433,9 +433,9 @@ class EditorRepeat(Editor):
         self.layout.addLayout(self.repeatDirection)
 
         self.repeatCount = QtWidgets.QHBoxLayout(self)
-        self.repeatCountLabel = QtWidgets.QLabel("Count: ")
+        self.repeatCountLabel = QtWidgets.QLabel("Max: ")
         self.repeatCountLineEdit = QtWidgets.QLineEdit()
-        self.repeatCountLineEdit.setValidator(QtGui.QIntValidator(-1,1000,self))
+        self.repeatCountLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
         self.repeatCountLineEdit.textEdited.connect(self.setValues)
         self.repeatCount.addWidget(self.repeatCountLabel)
         self.repeatCount.addWidget(self.repeatCountLineEdit)
