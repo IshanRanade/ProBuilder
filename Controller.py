@@ -152,7 +152,7 @@ class Controller(object):
             self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
         elif node.nodeType == NodeType.repeat:
             self.gui.editorWidget.currentWidget().directionSpinBox.setValue(node.direction)
-            self.gui.editorWidget.currentWidget().repeatCountSpinBox.setValue(node.count)
+            self.gui.editorWidget.currentWidget().repeatCountLineEdit.setText(str(node.count))
             self.gui.editorWidget.currentWidget().repeatPercentageSpinBox.setValue(node.percentage)
 
         self.gui.update()

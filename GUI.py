@@ -434,12 +434,11 @@ class EditorRepeat(Editor):
 
         self.repeatCount = QtWidgets.QHBoxLayout(self)
         self.repeatCountLabel = QtWidgets.QLabel("Count: ")
-        self.repeatCountSpinBox = QtWidgets.QSpinBox()
-        self.repeatCountSpinBox.setSingleStep(1)
-        self.repeatCountSpinBox.setRange(0, 2)
-        self.repeatCountSpinBox.valueChanged.connect(self.setValues)
+        self.repeatCountLineEdit = QtWidgets.QLineEdit()
+        self.repeatCountLineEdit.setValidator(QtGui.QIntValidator(-1,1000,self))
+        self.repeatCountLineEdit.textEdited.connect(self.setValues)
         self.repeatCount.addWidget(self.repeatCountLabel)
-        self.repeatCount.addWidget(self.repeatCountSpinBox)
+        self.repeatCount.addWidget(self.repeatCountLineEdit)
         self.layout.addLayout(self.repeatCount)
 
         self.repeatPercentage = QtWidgets.QHBoxLayout(self)
@@ -455,4 +454,5 @@ class EditorRepeat(Editor):
         self.setLayout(self.layout)
     
     def setValues(self):
-        self.controller.setRepeatValues(self.directionSpinBox.value(), self.repeatCountSpinBox.value(), self.repeatPercentageSpinBox.value())
+        if self.repeatCountLineEdit.text() not in ["-", ""]:
+            self.controller.setRepeatValues(self.directionSpinBox.value(), int(self.repeatCountLineEdit.text()), self.repeatPercentageSpinBox.value())
