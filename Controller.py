@@ -27,6 +27,13 @@ class Controller(object):
         self.gui.setWindowOpacity(0.8)
         
     def testGraph1(self):
+        for key in self.graph.nodzToNode:
+            key._remove()
+            self.gui.nodzWidget.signal_NodeDeleted.emit([key])
+            
+        self.graph = None
+        self.graph = Graph(self.nodz)
+
         self.currentSelectedNode = self.graph.root
         repeat = self.graph.addNode(NodeType.repeat)
         self.gui.setNextNodePosition(repeat, self.currentSelectedNode, None)
@@ -58,6 +65,12 @@ class Controller(object):
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 2", mesh3, "Node")
 
     def testGraph2(self):
+        for key in self.graph.nodzToNode:
+            key._remove()
+            self.gui.nodzWidget.signal_NodeDeleted.emit([key])
+            
+        self.graph = None
+        self.graph = Graph(self.nodz)
         # Create a test graph
         self.currentSelectedNode = self.graph.root
         translate1 = self.graph.addNode(NodeType.translate)
