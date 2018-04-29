@@ -152,6 +152,7 @@ class Controller(object):
             self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
         elif node.nodeType == NodeType.repeat:
             self.gui.editorWidget.currentWidget().directionSpinBox.setValue(node.direction)
+            self.gui.editorWidget.currentWidget().repeatCountSpinBox.setValue(node.count)
 
         self.gui.update()
 
@@ -192,8 +193,9 @@ class Controller(object):
     def setSplitSegmentValues(self, proportion):
         self.currentSelectedNode.children[self.currentSelectedAttribute].proportion = proportion
 
-    def setRepeatValues(self, direction):
+    def setRepeatValues(self, direction, count):
         self.currentSelectedNode.direction = direction
+        self.currentSelectedNode.count = count
 
     def setMeshName(self, name):
         self.currentSelectedNode.name=name

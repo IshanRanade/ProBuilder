@@ -422,15 +422,27 @@ class EditorRepeat(Editor):
 
         self.controller = controller
 
-        self.direction = QtWidgets.QHBoxLayout(self)
+        self.repeatDirection = QtWidgets.QHBoxLayout(self)
         self.directionLabel = QtWidgets.QLabel("Direction: ")
         self.directionSpinBox = QtWidgets.QSpinBox()
         self.directionSpinBox.setSingleStep(1)
         self.directionSpinBox.setRange(0, 2)
         self.directionSpinBox.valueChanged.connect(self.setValues)
-        self.direction.addWidget(self.directionLabel)
-        self.direction.addWidget(self.directionSpinBox)
-        self.layout.addLayout(self.direction)
+        self.repeatDirection.addWidget(self.directionLabel)
+        self.repeatDirection.addWidget(self.directionSpinBox)
+        self.layout.addLayout(self.repeatDirection)
 
+        self.repeatCount = QtWidgets.QHBoxLayout(self)
+        self.repeatCountLabel = QtWidgets.QLabel("Count: ")
+        self.repeatCountSpinBox = QtWidgets.QSpinBox()
+        self.repeatCountSpinBox.setSingleStep(1)
+        self.repeatCountSpinBox.setRange(0, 2)
+        self.repeatCountSpinBox.valueChanged.connect(self.setValues)
+        self.repeatCount.addWidget(self.repeatCountLabel)
+        self.repeatCount.addWidget(self.repeatCountSpinBox)
+        self.layout.addLayout(self.repeatCount)
+
+        self.setLayout(self.layout)
+    
     def setValues(self):
-        self.controller.setRepeatValues(self.directionSpinBox.value())
+        self.controller.setRepeatValues(self.directionSpinBox.value(), self.repeatCountSpinBox.value())
