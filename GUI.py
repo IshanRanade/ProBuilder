@@ -151,9 +151,17 @@ class Generate(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
 
-        self.label = QtWidgets.QLabel("Create Mesh:")
+        self.label = QtWidgets.QLabel("Options:")
         self.label.setAlignment(QtCore.Qt.AlignHCenter)
         self.layout.addWidget(self.label)
+
+        self.buttonLoad = QtWidgets.QPushButton("Load")
+        self.buttonLoad.clicked.connect(controller.loadGraph)
+        self.layout.addWidget(self.buttonLoad)
+
+        self.buttonSave = QtWidgets.QPushButton("Save")
+        self.buttonSave.clicked.connect(controller.saveGraph)
+        self.layout.addWidget(self.buttonSave)
 
         self.button = QtWidgets.QPushButton("Generate")
         self.button.clicked.connect(controller.generateMesh)

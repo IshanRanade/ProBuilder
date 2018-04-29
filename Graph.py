@@ -102,19 +102,17 @@ class SplitSegmentNode(Node):
         self.nodz = nodz
         self.graph = None
         self.parent = None
-        self.idx = None
 
+        self.idx = None
         self.proportion = 1
         
 class MeshNode(Node):
 
-    is_set=None
-    name=None
-
     def __init__(self, nodz, nodzToNode):
         super(MeshNode, self).__init__(NodeType.mesh, nodz, nodzToNode, False, True)
 
-        self.is_set = False
+        self.isSet = False
+        self.filePath = None
 
 class RepeatNode(Node):
 
@@ -223,7 +221,7 @@ class Graph(object):
             scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
         # Mesh Node
         elif node.nodeType == NodeType.mesh:
-            if(node.is_set):
+            if(node.isSet):
                 cmds.select( cmds.duplicate(node.name) )
                 #Reset translate
                 cmds.setAttr('%s.translateX'% node.name,0)

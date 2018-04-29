@@ -1,6 +1,9 @@
 from Graph import NodeType
 from Graph import Graph
 from GUI import GUI
+from Qt import QtGui, QtCore, QtWidgets
+import os
+import json
 
 
 class Controller(object):
@@ -135,6 +138,84 @@ class Controller(object):
     def generateMesh(self):
         self.graph.generateMesh()
 
+    def loadGraph(self):
+        #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
+        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Graphs/graph1.json'
+
+        JSON = json.load(open(fileName))
+
+    def saveGraph(self):
+        #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
+        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Graphs/graph1.json'
+
+        graphData = {}
+
+        nodeIndex = 0
+        nodeToIndex = {}
+
+        # Set the values for each node based on their type
+        queue = [self.graph.root]
+        while len(queue) > 0:
+        
+            node = queue[0]
+            del queue[0]
+
+            if node not in nodeToIndex:
+                graphData[nodeIndex] = {}
+                nodeToIndex[node] = nodeIndex
+                
+                graphData[nodeIndex]["type"] = node.nodeType
+                if node.nodeType == NodeType.translate:
+                    graphData[nodeIndex]["translateX"] = node.translateX
+                    graphData[nodeIndex]["translateY"] = node.translateY
+                    graphData[nodeIndex]["translateZ"] = node.translateZ
+                elif node.nodeType == NodeType.rotate:
+                    graphData[nodeIndex]["rotateX"] = node.rotateX
+                    graphData[nodeIndex]["rotateY"] = node.rotateY
+                    graphData[nodeIndex]["rotateZ"] = node.rotateZ
+                elif node.nodeType == NodeType.scale:
+                    graphData[nodeIndex]["scaleX"] = node.scaleX
+                    graphData[nodeIndex]["scaleY"] = node.scaleY
+                    graphData[nodeIndex]["scaleZ"] = node.scaleZ
+                elif node.nodeType == NodeType.init:
+                    graphData[nodeIndex]["lotX"] = node.lotX
+                    graphData[nodeIndex]["lotY"] = node.lotY
+                    graphData[nodeIndex]["lotZ"] = node.lotZ
+                elif node.nodeType == NodeType.split:
+                    graphData[nodeIndex]["segmentCount"] = node.segmentCount
+                    graphData[nodeIndex]["segmentDirection"] = node.segmentDirection
+                elif node.nodeType == NodeType.mesh:
+                    pass
+                elif node.nodeType == NodeType.splitSegment:
+                    graphData[nodeIndex]["idx"] = node.idx
+                    graphData[nodeIndex]["proportion"] = node.proportion
+                elif node.nodeType == NodeType.repeat:
+                    graphData[nodeIndex]["direction"] = node.direction
+                    graphData[nodeIndex]["count"] = node.count
+                    graphData[nodeIndex]["percentage"] = node.percentage
+
+                nodeIndex += 1
+
+                for child in node.children:
+                    queue.append(child)
+
+        # Now set the children arrays for every node
+        queue = [self.graph.root]
+        seenNodes = set()
+        while len(queue) > 0:
+            node = queue[0]
+            del queue[0]
+
+            if 'children' not in graphData[nodeToIndex[node]]:
+                graphData[nodeToIndex[node]]['children'] = []
+                for child in node.children:
+                    graphData[nodeToIndex[node]]['children'].append(nodeToIndex[child])
+                    queue.append(child)
+
+        jsonData = json.dumps(graphData)
+        with open(fileName, 'w+') as file:
+            file.write(jsonData)   
+
     def populateGUIEditor(self, node):
         if node.nodeType == NodeType.init:
             self.gui.editorWidget.currentWidget().lotXLineEdit.setText(str(node.lotX))
@@ -209,5 +290,5 @@ class Controller(object):
         self.currentSelectedNode.percentage = percentage
 
     def setMeshName(self, name):
-        self.currentSelectedNode.name=name
-        self.currentSelectedNode.is_set=True
+        self.currentSelectedNode.name = name
+        self.currentSelectedNode.isSet = True
