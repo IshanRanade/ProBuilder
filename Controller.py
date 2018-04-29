@@ -33,9 +33,29 @@ class Controller(object):
         self.graph.createManualEdge(self.currentSelectedNode, "Node", repeat, "Node")
 
         self.currentSelectedNode = repeat
-        mesh = self.graph.addNode(NodeType.mesh)
-        self.gui.setNextNodePosition(mesh, self.currentSelectedNode, None)
-        self.graph.createManualEdge(self.currentSelectedNode, "Node", mesh, "Node")
+        split1 = self.graph.addNode(NodeType.split)
+        self.gui.setNextNodePosition(split1, self.currentSelectedNode, None)
+        self.graph.createManualEdge(self.currentSelectedNode, "Node", split1, "Node")
+
+        self.currentSelectedNode = split1
+        self.setSplitValues(3, split1.segmentDirection)
+        split1.segmentCount = 3
+
+        split1.children[0].proportion = 1
+        split1.children[1].proportion = 1
+        split1.children[2].proportion = 1
+
+        mesh1 = self.graph.addNode(NodeType.mesh)
+        self.gui.setNextNodePosition(mesh1, self.currentSelectedNode, 0)
+        self.graph.createManualEdge(self.currentSelectedNode, "Segment 0", mesh1, "Node")
+
+        mesh2 = self.graph.addNode(NodeType.mesh)
+        self.gui.setNextNodePosition(mesh2, self.currentSelectedNode, 1)
+        self.graph.createManualEdge(self.currentSelectedNode, "Segment 1", mesh2, "Node")
+        
+        mesh3 = self.graph.addNode(NodeType.mesh)
+        self.gui.setNextNodePosition(mesh3, self.currentSelectedNode, 2)
+        self.graph.createManualEdge(self.currentSelectedNode, "Segment 2", mesh3, "Node")
 
     def testGraph2(self):
         # Create a test graph
