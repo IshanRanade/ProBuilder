@@ -53,9 +53,9 @@ class InitialNode(Node):
     def __init__(self, nodz, nodzToNode):
         super(InitialNode, self).__init__(NodeType.init, nodz, nodzToNode, True, False)
 
-        self.lotX = 50
-        self.lotY = 50
-        self.lotZ = 50
+        self.lotX = 10
+        self.lotY = 10
+        self.lotZ = 10
 
 class TranslateNode(Node):
 
@@ -102,6 +102,7 @@ class SplitSegmentNode(Node):
         self.nodz = nodz
         self.graph = None
         self.parent = None
+        self.idx = None
 
         self.proportion = 1
         
@@ -177,10 +178,8 @@ class Graph(object):
                 print NodeType.getString(curr.nodeType)
 
                 attrsParent = vars(curr)
-                attrsChild = vars(child)
 
                 print ', '.join("%s: %s" % item for item in attrsParent.items())
-                print ', '.join("%s: %s" % item for item in attrsChild.items()) 
 
                 print ""
 
@@ -206,10 +205,10 @@ class Graph(object):
         cmds.select(polyMeshes, r=True)
         cmds.delete()
 
-        self.generateMeshHelper(self.root, np.array([0,0,0]), np.array([1,0,0,0]), np.array([1,1,1]), 
-            np.array([self.root.lotX, self.root.lotY, self.root.lotZ]))
+        self.generateMeshHelper(self.root, np.array([0.0,0.0,0.0]), np.array([1.0,0.0,0.0,0.0]), 
+            np.array([1.0*self.root.lotX, 1.0*self.root.lotY, 1.0*self.root.lotZ]))
 
-    def generateMeshHelper(self, node, translate, rotate, scale, lotSize):
+    def generateMeshHelper(self, node, translate, rotate, scale):
 
         # Translate Node
         if node.nodeType == NodeType.translate:
@@ -244,82 +243,29 @@ class Graph(object):
                 ay = ay* 180.0/math.pi
                 az = az* 180.0/math.pi
                 cmds.scale(scale[0], scale[1], scale[2])
-                cmds.move(translate[0],translate[1],translate[2])
+                cmds.move(translate[0] + 0.5 * scale[0],translate[1] + 0.5 * scale[1],translate[2] + 0.5 * scale[2])
                 cmds.rotate(ax,ay,az)
         # Repeat Node
         elif node.nodeType == NodeType.repeat:
             pass
         # Split Segment Node
         elif node.nodeType == NodeType.splitSegment:
-            pass
+            totalWeight = 0.0
+            prevWeight = 0.0
+
+            for i in range(0, len(node.parent.children)):
+                child = node.parent.children[i]
+
+                totalWeight += 1.0 * child.proportion
+                
+                if i < node.idx:
+                    prevWeight += 1.0 * child.proportion
+
+            translate[node.parent.segmentDirection] += (1.0 * scale[node.parent.segmentDirection] * prevWeight) / (1.0 * totalWeight)
+            scale[node.parent.segmentDirection] *= (1.0 * node.proportion / totalWeight)
         # Split Node
         elif node.nodeType == NodeType.split:
-                        
-            total_weight = 0.0
-            
-            for child in node.children:
-                total_weight = total_weight+child.proportion
-                    
-            #segment directions
-            #X dir
-            if node.segmentDirection%3 == 0:
-
-                start=translate[0]-scale[0]/2.0
-                
-                for child in node.children:
-
-                    new_scaleX=scale[0]*child.proportion / total_weight
-                    new_scaleY=scale[1]
-                    new_scaleZ = scale[2]
-
-                    new_transX=start + new_scaleX/2.0
-                    new_transY=translate[1]
-                    new_transZ=translate[2]
-
-                    start=start+ abs(new_scaleX)
-            
-                    #self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
-
-            #Y dir          
-            elif node.segmentDirection%3 == 1:
-
-                start=translate[1]-scale[1]/2.0
-                
-                for child in node.children:
-
-                    new_scaleX=scale[0]
-                    new_scaleY=scale[1]*child.proportion / total_weight
-                    new_scaleZ = scale[2]
-
-                    new_transY=start + new_scaleY/2.0
-                    new_transX=translate[0]
-                    new_transZ=translate[2]
-
-                    start=start+ abs(new_scaleY)
-            
-                    #self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
-
-            #Z dir            
-            elif node.segmentDirection%3 == 2:
-                    
-                start=translate[2]-scale[2]/2.0
-                
-                for child in node.children:
-
-                    new_scaleX=scale[0]
-                    new_scaleY=scale[1]
-                    new_scaleZ = scale[2]*child.proportion / total_weight
-            
-                    new_transZ=start + new_scaleZ/2.0
-                    new_transX=translate[0]
-                    new_transY=translate[1]
-
-                    start=start+ abs(new_scaleZ)
-            
-                    #self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
-                            
-            #jump out of function at here.
-            return 0
+            pass
 
         for child in node.children:
-            self.generateMeshHelper(child, np.array(translate), np.array(rotate), np.array(scale), np.array(lotSize))
+            self.generateMeshHelper(child, np.array(translate), np.array(rotate), np.array(scale))

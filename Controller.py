@@ -42,6 +42,10 @@ class Controller(object):
         self.setSplitValues(3, split1.segmentDirection)
         split1.segmentCount = 3
 
+        split1.children[0].proportion = 1
+        split1.children[1].proportion = 4.0
+        split1.children[2].proportion = 1
+
         mesh1 = self.graph.addNode(NodeType.mesh)
         self.gui.setNextNodePosition(mesh1, self.currentSelectedNode, 0)
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 0", mesh1, "Node")
@@ -178,6 +182,8 @@ class Controller(object):
         for x in range(self.currentSelectedNode.segmentCount, segmentCount):
             newNode = self.graph.addNode(NodeType.splitSegment)
             self.currentSelectedNode.children.append(newNode)
+            newNode.parent = self.currentSelectedNode
+            newNode.idx = x
             self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Segment '+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
         
         self.currentSelectedNode.segmentDirection = segmentDirection
