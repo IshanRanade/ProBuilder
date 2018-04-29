@@ -42,6 +42,7 @@ class Node(object):
         self.nodzNode = nodz.createNode(name=NodeType.getString(nodeType), preset='node_preset_1', position=None)
         self.nodz = nodz
         self.graph = None
+        self.parent = None
         
         nodz.createAttribute(node=self.nodzNode, name='Node', index=-1, preset='attr_preset_1', plug=isPlug, socket=isSocket, dataType=str)
 
@@ -100,6 +101,7 @@ class SplitSegmentNode(Node):
         self.children = []
         self.nodz = nodz
         self.graph = None
+        self.parent = None
 
         self.proportion = 1
         
@@ -156,12 +158,14 @@ class Graph(object):
     def createEdge(self, srcNodzNode, srcPlugName, destNodzNode, dstSocketName):
         if self.nodzToNode[srcNodzNode].nodeType == NodeType.split and "Segment" in srcPlugName:
             self.nodzToNode[srcNodzNode].children[int(srcPlugName[len(srcPlugName)-1])].children.append(self.nodzToNode[destNodzNode])
+            self.nodzToNode[destNodzNode].parent = self.nodzToNode[srcNodzNode].children[int(srcPlugName[len(srcPlugName)-1])]
         else:
             self.nodzToNode[srcNodzNode].children.append(self.nodzToNode[destNodzNode])
+            self.nodzToNode[destNodzNode].parent = self.nodzToNode[srcNodzNode]
 
     def createManualEdge(self, srcNode, srcAttrib, destNode, destAttrib):
-        #srcNode.children.append(destNode)
         self.nodz.createConnection(srcNode.nodzNode, srcAttrib, destNode.nodzNode, destAttrib)
+        destNode.parent = srcNode
 
     def printGraph(self):
         queue = [self.root]
@@ -202,18 +206,21 @@ class Graph(object):
         cmds.select(polyMeshes, r=True)
         cmds.delete()
 
-        self.generateMeshHelper(self.root, np.array([0,0,0]), np.array([1,0,0,0]), np.array([1,1,1]))
+        self.generateMeshHelper(self.root, np.array([0,0,0]), np.array([1,0,0,0]), np.array([1,1,1]), 
+            np.array([self.root.lotX, self.root.lotY, self.root.lotZ]))
 
-    def generateMeshHelper(self, node, translate, rotate, scale):
+    def generateMeshHelper(self, node, translate, rotate, scale, lotSize):
 
-        is_gen=False 
-
+        # Translate Node
         if node.nodeType == NodeType.translate:
             translate = np.add(translate, np.array([node.translateX, node.translateY, node.translateZ]))
+        # Rotate Node
         elif node.nodeType == NodeType.rotate:
             rotate = LinAlg.quaternion_multiply(rotate, LinAlg.quaternion_from_euler(node.rotateX, node.rotateY, node.rotateZ,'sxyz'))
+        # Scale Node
         elif node.nodeType == NodeType.scale:
             scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
+        # Mesh Node
         elif node.nodeType == NodeType.mesh:
             if(node.is_set):
                 cmds.select( cmds.duplicate(node.name) )
@@ -239,13 +246,16 @@ class Graph(object):
                 cmds.scale(scale[0], scale[1], scale[2])
                 cmds.move(translate[0],translate[1],translate[2])
                 cmds.rotate(ax,ay,az)
-
-            is_gen=True
-            
+        # Repeat Node
+        elif node.nodeType == NodeType.repeat:
+            pass
+        # Split Segment Node
+        elif node.nodeType == NodeType.splitSegment:
+            pass
+        # Split Node
         elif node.nodeType == NodeType.split:
                         
             total_weight = 0.0
-            
             
             for child in node.children:
                 total_weight = total_weight+child.proportion
@@ -268,7 +278,7 @@ class Graph(object):
 
                     start=start+ abs(new_scaleX)
             
-                    self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
+                    #self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
 
             #Y dir          
             elif node.segmentDirection%3 == 1:
@@ -287,7 +297,7 @@ class Graph(object):
 
                     start=start+ abs(new_scaleY)
             
-                    self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
+                    #self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
 
             #Z dir            
             elif node.segmentDirection%3 == 2:
@@ -306,22 +316,10 @@ class Graph(object):
 
                     start=start+ abs(new_scaleZ)
             
-                    self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
+                    #self.generateMeshHelper(child, np.array([new_transX,new_transY,new_transZ]), np.array(rotate), np.array([new_scaleX,new_scaleY,new_scaleZ]))
                             
             #jump out of function at here.
             return 0
 
         for child in node.children:
-            self.generateMeshHelper(child, np.array(translate), np.array(rotate), np.array(scale))
-
-        if not node.children:
-            #
-            if not is_gen:
-                ax, ay, az = LinAlg.euler_from_quaternion(rotate,'sxyz')
-                ax = ax* 180.0/math.pi
-                ay = ay* 180.0/math.pi
-                az = az* 180.0/math.pi
-                cmds.polyCube()
-                cmds.scale(scale[0], scale[1], scale[2])
-                cmds.move(translate[0],translate[1],translate[2])
-                cmds.rotate(ax,ay,az)
+            self.generateMeshHelper(child, np.array(translate), np.array(rotate), np.array(scale), np.array(lotSize))

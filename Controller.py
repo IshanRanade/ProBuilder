@@ -42,6 +42,17 @@ class Controller(object):
         self.setSplitValues(3, split1.segmentDirection)
         split1.segmentCount = 3
 
+        mesh1 = self.graph.addNode(NodeType.mesh)
+        self.gui.setNextNodePosition(mesh1, self.currentSelectedNode, 0)
+        self.graph.createManualEdge(self.currentSelectedNode, "Segment 0", mesh1, "Node")
+
+        mesh2 = self.graph.addNode(NodeType.mesh)
+        self.gui.setNextNodePosition(mesh2, self.currentSelectedNode, 1)
+        self.graph.createManualEdge(self.currentSelectedNode, "Segment 1", mesh2, "Node")
+        
+        mesh3 = self.graph.addNode(NodeType.mesh)
+        self.gui.setNextNodePosition(mesh3, self.currentSelectedNode, 2)
+        self.graph.createManualEdge(self.currentSelectedNode, "Segment 2", mesh3, "Node")
 
 
         """
