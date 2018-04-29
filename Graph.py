@@ -122,7 +122,8 @@ class RepeatNode(Node):
         super(RepeatNode, self).__init__(NodeType.repeat, nodz, nodzToNode, True, True)
 
         self.direction = 0
-        self.count = 0
+        self.count = -1
+        self.percentage = 20
 
 class Graph(object):
 

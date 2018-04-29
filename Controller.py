@@ -153,6 +153,7 @@ class Controller(object):
         elif node.nodeType == NodeType.repeat:
             self.gui.editorWidget.currentWidget().directionSpinBox.setValue(node.direction)
             self.gui.editorWidget.currentWidget().repeatCountSpinBox.setValue(node.count)
+            self.gui.editorWidget.currentWidget().repeatPercentageSpinBox.setValue(node.percentage)
 
         self.gui.update()
 
@@ -193,9 +194,10 @@ class Controller(object):
     def setSplitSegmentValues(self, proportion):
         self.currentSelectedNode.children[self.currentSelectedAttribute].proportion = proportion
 
-    def setRepeatValues(self, direction, count):
+    def setRepeatValues(self, direction, count, percentage):
         self.currentSelectedNode.direction = direction
         self.currentSelectedNode.count = count
+        self.currentSelectedNode.percentage = percentage
 
     def setMeshName(self, name):
         self.currentSelectedNode.name=name

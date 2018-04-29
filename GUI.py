@@ -442,7 +442,17 @@ class EditorRepeat(Editor):
         self.repeatCount.addWidget(self.repeatCountSpinBox)
         self.layout.addLayout(self.repeatCount)
 
+        self.repeatPercentage = QtWidgets.QHBoxLayout(self)
+        self.repeatPercentageLabel = QtWidgets.QLabel("Size %")
+        self.repeatPercentageSpinBox = QtWidgets.QSpinBox()
+        self.repeatPercentageSpinBox.setSingleStep(1)
+        self.repeatPercentageSpinBox.setRange(0, 100)
+        self.repeatPercentageSpinBox.valueChanged.connect(self.setValues)
+        self.repeatPercentage.addWidget(self.repeatPercentageLabel)
+        self.repeatPercentage.addWidget(self.repeatPercentageSpinBox)
+        self.layout.addLayout(self.repeatPercentage)
+
         self.setLayout(self.layout)
     
     def setValues(self):
-        self.controller.setRepeatValues(self.directionSpinBox.value(), self.repeatCountSpinBox.value())
+        self.controller.setRepeatValues(self.directionSpinBox.value(), self.repeatCountSpinBox.value(), self.repeatPercentageSpinBox.value())
