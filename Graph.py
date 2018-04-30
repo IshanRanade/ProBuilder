@@ -223,7 +223,7 @@ class Graph(object):
         # Mesh Node
         elif node.nodeType == NodeType.mesh:
             if True:
-                cmds.file('/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Geometry/sphere.ma', i=True, namespace="importedMesh", mergeNamespacesOnClash=True)
+                cmds.file(node.filePath, i=True, namespace="importedMesh", mergeNamespacesOnClash=True)
                 selection = cmds.ls("importedMesh:*", type="mesh")
                 cmds.select(selection[0])
             else:
