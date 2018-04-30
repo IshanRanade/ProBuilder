@@ -138,13 +138,80 @@ class Controller(object):
     def generateMesh(self):
         self.graph.generateMesh()
 
-    def loadGraph(self):
+    def loadGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
         fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Graphs/graph1.json'
 
         JSON = json.load(open(fileName))
 
-    def saveGraph(self):
+        # Delete the existing nodz in the GUI and reset the graph
+        for key in self.graph.nodzToNode:
+            key._remove()
+            self.gui.nodzWidget.signal_NodeDeleted.emit([key])
+            
+        self.graph = None
+
+        # Now parse the json and set up a new graph
+        self.graph = Graph(self.nodz)
+
+        self.graph.root.lotX = float(JSON['0']["lotX"])
+        self.graph.root.lotY = float(JSON['0']["lotY"])
+        self.graph.root.lotZ = float(JSON['0']["lotZ"])
+
+        self.graph.root.nodzNode.setPos(QtCore.QPoint(JSON['0']["nodzPosX"], JSON['0']["nodzPosY"]))
+
+        nodeIndexToNode = {}
+        nodeIndexToNode['0'] = self.graph.root
+
+        queue = []
+        for childIdx in JSON['0']["children"]:
+            queue.append(('0', str(childIdx)))
+
+        while len(queue) > 0:
+            parentIdx, childIdx = queue[0]
+            del queue[0]
+
+            parentNode = nodeIndexToNode[parentIdx]
+            childNode = None
+
+            if childIdx not in nodeIndexToNode:
+                childNode = self.graph.addNode(JSON[childIdx]["type"])
+                self.currentSelectedNode = childNode
+
+                if JSON[childIdx]["type"] == NodeType.translate:
+                    self.setTranslateValues(JSON[childIdx]["translateX"], JSON[childIdx]["translateY"], JSON[childIdx]["translateZ"])
+                elif JSON[childIdx]["type"] == NodeType.rotate:
+                    self.setRotateValues(JSON[childIdx]["rotateX"], JSON[childIdx]["rotateY"], JSON[childIdx]["rotateZ"])
+                elif JSON[childIdx]["type"] == NodeType.scale:
+                    self.setScaleValues(JSON[childIdx]["scaleX"], JSON[childIdx]["scaleY"], JSON[childIdx]["scaleZ"])
+                elif JSON[childIdx]["type"] == NodeType.split:
+                    self.setSplitValues(JSON[childIdx]["segmentCount"], JSON[childIdx]["segmentDirection"])
+                elif JSON[childIdx]["type"] == NodeType.mesh:
+                    pass
+                elif JSON[childIdx]["type"] == NodeType.splitSegment:
+                    childNode.proportion = int(JSON[childIdx]["proportion"])
+                    childNode.idx = JSON[childIdx]["idx"]
+                elif JSON[childIdx]["type"] == NodeType.repeat:
+                    self.setRepeatValues(JSON[childIdx]["direction"], JSON[childIdx]["count"], JSON[childIdx]["percentage"])
+            else:
+                childNode = nodeIndexToNode[childIdx]
+
+            if JSON[parentIdx]["type"] == NodeType.split:
+                childNode.parent = parentNode
+            else:
+                childNode.nodzNode.setPos(QtCore.QPoint(JSON[childIdx]["nodzPosX"], JSON[childIdx]["nodzPosY"]))
+
+                if JSON[parentIdx]["type"] == NodeType.splitSegment:
+                    self.graph.createManualEdge(parentNode.parent, "Segment " + str(parentNode.idx), childNode, "Node")
+                else:
+                    self.graph.createManualEdge(parentNode, "Node", childNode, "Node")
+
+            nodeIndexToNode[childIdx] = childNode
+
+            for nextIdx in JSON[childIdx]["children"]:
+                queue.append((childIdx, str(nextIdx)))
+
+    def saveGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
         fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Graphs/graph1.json'
 
@@ -165,6 +232,11 @@ class Controller(object):
                 nodeToIndex[node] = nodeIndex
                 
                 graphData[nodeIndex]["type"] = node.nodeType
+
+                if node.nodzNode is not None:
+                    graphData[nodeIndex]["nodzPosX"] = node.nodzNode.x()
+                    graphData[nodeIndex]["nodzPosY"] = node.nodzNode.y()
+
                 if node.nodeType == NodeType.translate:
                     graphData[nodeIndex]["translateX"] = node.translateX
                     graphData[nodeIndex]["translateY"] = node.translateY
@@ -239,7 +311,8 @@ class Controller(object):
         elif node.nodeType == NodeType.splitSegment:
             self.gui.editorWidget.currentWidget().proportionLineEdit.setText(str(node.proportion))
         elif node.nodeType == NodeType.mesh:
-            self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
+            pass
+            #self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
         elif node.nodeType == NodeType.repeat:
             self.gui.editorWidget.currentWidget().directionSpinBox.setValue(node.direction)
             self.gui.editorWidget.currentWidget().repeatCountLineEdit.setText(str(node.count))

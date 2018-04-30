@@ -325,7 +325,7 @@ class EditorInitial(Editor):
         self.lotX = QtWidgets.QHBoxLayout(self)
         self.lotXLabel = QtWidgets.QLabel("Lot X: ")
         self.lotXLineEdit = QtWidgets.QLineEdit()
-        self.lotXLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+        self.lotXLineEdit.setValidator(QtGui.QDoubleValidator(-1000,1000, 5,self))
         self.lotXLineEdit.textEdited.connect(self.setValues)
         self.lotX.addWidget(self.lotXLabel)
         self.lotX.addWidget(self.lotXLineEdit)
@@ -334,7 +334,7 @@ class EditorInitial(Editor):
         self.lotY = QtWidgets.QHBoxLayout(self)
         self.lotYLabel = QtWidgets.QLabel("Lot Y: ")
         self.lotYLineEdit = QtWidgets.QLineEdit()
-        self.lotYLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+        self.lotYLineEdit.setValidator(QtGui.QDoubleValidator(-1000,1000, 5,self))
         self.lotYLineEdit.textEdited.connect(self.setValues)
         self.lotY.addWidget(self.lotYLabel)
         self.lotY.addWidget(self.lotYLineEdit)
@@ -343,7 +343,7 @@ class EditorInitial(Editor):
         self.lotZ = QtWidgets.QHBoxLayout(self)
         self.lotZLabel = QtWidgets.QLabel("Lot Z: ")
         self.lotZLineEdit = QtWidgets.QLineEdit()
-        self.lotZLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
+        self.lotZLineEdit.setValidator(QtGui.QDoubleValidator(-1000,1000, 5,self))
         self.lotZLineEdit.textEdited.connect(self.setValues)
         self.lotZ.addWidget(self.lotZLabel)
         self.lotZ.addWidget(self.lotZLineEdit)
@@ -353,7 +353,7 @@ class EditorInitial(Editor):
 
     def setValues(self):
         if self.lotXLineEdit.text() not in ["-", ""] and self.lotYLineEdit.text() not in ["-", ""] and self.lotZLineEdit.text() not in ["-", ""]:
-            self.controller.setInitialValues(int(self.lotXLineEdit.text()), int(self.lotYLineEdit.text()), int(self.lotZLineEdit.text()))
+            self.controller.setInitialValues(float(self.lotXLineEdit.text()), float(self.lotYLineEdit.text()), float(self.lotZLineEdit.text()))
 
 class EditorMesh(Editor):
 

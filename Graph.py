@@ -98,6 +98,7 @@ class SplitSegmentNode(Node):
 
     def __init__(self, nodz, nodzToNode):
         self.nodeType = NodeType.splitSegment
+        self.nodzNode = None
         self.children = []
         self.nodz = nodz
         self.graph = None
