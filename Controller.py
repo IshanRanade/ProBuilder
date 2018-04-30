@@ -191,7 +191,7 @@ class Controller(object):
                         childNode.children[i].proportion = JSON[str(JSON[childIdx]["children"][i])]["proportion"]
 
                 elif JSON[childIdx]["type"] == NodeType.mesh:
-                    pass
+                    childNode.filePath = JSON[childIdx]["meshFile"]
                 elif JSON[childIdx]["type"] == NodeType.splitSegment:
                     childNode.idx = JSON[childIdx]["idx"]
                 elif JSON[childIdx]["type"] == NodeType.repeat:
@@ -261,7 +261,7 @@ class Controller(object):
                     graphData[nodeIndex]["segmentCount"] = node.segmentCount
                     graphData[nodeIndex]["segmentDirection"] = node.segmentDirection
                 elif node.nodeType == NodeType.mesh:
-                    pass
+                    graphData[nodeIndex]["meshFile"] = node.filePath
                 elif node.nodeType == NodeType.splitSegment:
                     graphData[nodeIndex]["idx"] = node.idx
                     graphData[nodeIndex]["proportion"] = node.proportion
@@ -315,8 +315,7 @@ class Controller(object):
         elif node.nodeType == NodeType.splitSegment:
             self.gui.editorWidget.currentWidget().proportionLineEdit.setText(str(node.proportion))
         elif node.nodeType == NodeType.mesh:
-            pass
-            #self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.name))
+            self.gui.editorWidget.currentWidget().meshFileLineEdit.setText(str(node.filePath))
         elif node.nodeType == NodeType.repeat:
             self.gui.editorWidget.currentWidget().directionSpinBox.setValue(node.direction)
             self.gui.editorWidget.currentWidget().repeatCountLineEdit.setText(str(node.count))
@@ -367,5 +366,5 @@ class Controller(object):
         self.currentSelectedNode.percentage = percentage
 
     def setMeshName(self, name):
-        self.currentSelectedNode.name = name
+        self.currentSelectedNode.filePath = name
         self.currentSelectedNode.isSet = True

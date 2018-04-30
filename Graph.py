@@ -222,30 +222,20 @@ class Graph(object):
             scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
         # Mesh Node
         elif node.nodeType == NodeType.mesh:
-            if(node.isSet):
-                cmds.select( cmds.duplicate(node.name) )
-                #Reset translate
-                cmds.setAttr('%s.translateX'% node.name,0)
-                cmds.setAttr('%s.translateY'% node.name,0)
-                cmds.setAttr('%s.translateZ'% node.name,0)
-                
-                ax, ay, az = LinAlg.euler_from_quaternion(rotate)
-                ax = ax* 180.0/math.pi
-                ay = ay* 180.0/math.pi
-                az = az* 180.0/math.pi
-                
-                #cmds.scale(scale[0], scale[1], scale[2])
-                cmds.move(translate[0],translate[1],translate[2])
-                cmds.rotate(ax,ay,az)
+            if True:
+                cmds.file('/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Geometry/sphere.ma', i=True, namespace="importedMesh", mergeNamespacesOnClash=True)
+                selection = cmds.ls("importedMesh:*", type="mesh")
+                cmds.select(selection[0])
             else:
                 cmds.polyCube()
-                ax, ay, az = LinAlg.euler_from_quaternion(rotate)
-                ax = ax* 180.0/math.pi
-                ay = ay* 180.0/math.pi
-                az = az* 180.0/math.pi
-                cmds.scale(scale[0], scale[1], scale[2])
-                cmds.move(translate[0] + 0.5 * scale[0],translate[1] + 0.5 * scale[1],translate[2] + 0.5 * scale[2])
-                cmds.rotate(ax,ay,az)
+
+            ax, ay, az = LinAlg.euler_from_quaternion(rotate)
+            ax = ax* 180.0/math.pi
+            ay = ay* 180.0/math.pi
+            az = az* 180.0/math.pi
+            cmds.scale(scale[0], scale[1], scale[2])
+            cmds.move(translate[0] + 0.5 * scale[0],translate[1] + 0.5 * scale[1],translate[2] + 0.5 * scale[2])
+            cmds.rotate(ax,ay,az)
         # Repeat Node
         elif node.nodeType == NodeType.repeat:
             if len(node.children) > 0:

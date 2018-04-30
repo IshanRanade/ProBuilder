@@ -362,19 +362,18 @@ class EditorMesh(Editor):
 
         self.controller = controller
 
-        self.scaleX = QtWidgets.QHBoxLayout(self)
-        self.scaleXLabel = QtWidgets.QLabel("Name: ")
-        self.scaleXLineEdit = QtWidgets.QLineEdit()
-        #self.scaleXLineEdit.setValidator(QtGui.QStringValidator(0,1000,self))
-        self.scaleXLineEdit.textEdited.connect(self.setName)
-        self.scaleX.addWidget(self.scaleXLabel)
-        self.scaleX.addWidget(self.scaleXLineEdit)
-        self.layout.addLayout(self.scaleX)
+        self.meshFile = QtWidgets.QHBoxLayout(self)
+        self.meshFileLabel = QtWidgets.QLabel("File: ")
+        self.meshFileLineEdit = QtWidgets.QLineEdit()
+        self.meshFileLineEdit.textEdited.connect(self.setName)
+        self.meshFile.addWidget(self.meshFileLabel)
+        self.meshFile.addWidget(self.meshFileLineEdit)
+        self.layout.addLayout(self.meshFile)
 
         self.setLayout(self.layout)
 
     def setName(self):
-        self.controller.setMeshName(self.scaleXLineEdit.text())
+        self.controller.setMeshName(self.meshFileLineEdit.text())
 
 class EditorSplit(Editor):
 
