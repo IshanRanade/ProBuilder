@@ -186,15 +186,19 @@ class Controller(object):
                     self.setScaleValues(JSON[childIdx]["scaleX"], JSON[childIdx]["scaleY"], JSON[childIdx]["scaleZ"])
                 elif JSON[childIdx]["type"] == NodeType.split:
                     self.setSplitValues(JSON[childIdx]["segmentCount"], JSON[childIdx]["segmentDirection"])
+
+                    for i in range(0, JSON[childIdx]["segmentCount"]):
+                        childNode.children[i].proportion = JSON[str(JSON[childIdx]["children"][i])]["proportion"]
+
                 elif JSON[childIdx]["type"] == NodeType.mesh:
                     pass
                 elif JSON[childIdx]["type"] == NodeType.splitSegment:
-                    childNode.proportion = int(JSON[childIdx]["proportion"])
                     childNode.idx = JSON[childIdx]["idx"]
                 elif JSON[childIdx]["type"] == NodeType.repeat:
                     self.setRepeatValues(JSON[childIdx]["direction"], JSON[childIdx]["count"], JSON[childIdx]["percentage"])
             else:
                 childNode = nodeIndexToNode[childIdx]
+                self.currentSelectedNode = childNode
 
             if JSON[parentIdx]["type"] == NodeType.split:
                 childNode.parent = parentNode
