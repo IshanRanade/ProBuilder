@@ -44,7 +44,7 @@ class Nodz(QtWidgets.QGraphicsView):
     signal_KeyPressed = QtCore.Signal(object)
     signal_Dropped = QtCore.Signal()
 
-    def __init__(self, parent, configPath=defaultConfigPath):
+    def __init__(self, parent, controller, configPath=defaultConfigPath):
         """
         Initialize the graphics view.
 
@@ -53,6 +53,8 @@ class Nodz(QtWidgets.QGraphicsView):
 
         # Load nodz configuration.
         self.loadConfig(configPath)
+
+        self.controller = controller
 
         # General data.
         self.gridVisToggle = True
@@ -298,6 +300,7 @@ class Nodz(QtWidgets.QGraphicsView):
             self.pressedKeys.append(event.key())
 
         if event.key() == QtCore.Qt.Key_Delete:
+            self.controller.deleteNode()
             self._deleteSelectedNodes()
 
         if event.key() == QtCore.Qt.Key_F:
@@ -1128,22 +1131,23 @@ class NodeItem(QtWidgets.QGraphicsItem):
         in the process
 
         """
-        self.scene().nodes.remove(self)
+        if self.scene() is not None:
+            self.scene().nodes.remove(self)
 
-        # Remove all sockets connections.
-        for socket in self.sockets.values():
-            while len(socket.connections)>0:
-                socket.connections[0]._remove()
+            # Remove all sockets connections.
+            for socket in self.sockets.values():
+                while len(socket.connections)>0:
+                    socket.connections[0]._remove()
 
-        # Remove all plugs connections.
-        for plug in self.plugs.values():
-            while len(plug.connections)>0:
-                plug.connections[0]._remove()
+            # Remove all plugs connections.
+            for plug in self.plugs.values():
+                while len(plug.connections)>0:
+                    plug.connections[0]._remove()
 
-        # Remove node.
-        scene = self.scene()
-        scene.removeItem(self)
-        scene.update()
+            # Remove node.
+            scene = self.scene()
+            scene.removeItem(self)
+            scene.update()
 
     def boundingRect(self):
         """

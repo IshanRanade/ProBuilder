@@ -58,14 +58,17 @@ class Controller(object):
         mesh1 = self.graph.addNode(NodeType.mesh)
         self.gui.setNextNodePosition(mesh1, self.currentSelectedNode, 0)
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 0", mesh1, "Node")
+        mesh1.parent = split1.children[0]
 
         mesh2 = self.graph.addNode(NodeType.mesh)
         self.gui.setNextNodePosition(mesh2, self.currentSelectedNode, 1)
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 1", mesh2, "Node")
+        mesh2.parent = split1.children[1]
         
         mesh3 = self.graph.addNode(NodeType.mesh)
         self.gui.setNextNodePosition(mesh3, self.currentSelectedNode, 2)
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 2", mesh3, "Node")
+        mesh3.parent = split1.children[2]
 
     def testGraph2(self):
         for key in self.graph.nodzToNode:
@@ -96,14 +99,30 @@ class Controller(object):
         mesh1 = self.graph.addNode(NodeType.mesh)
         self.gui.setNextNodePosition(mesh1, self.currentSelectedNode, 0)
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 0", mesh1, "Node")
+        mesh1.parent = split1.children[0]
 
         mesh2 = self.graph.addNode(NodeType.mesh)
         self.gui.setNextNodePosition(mesh2, self.currentSelectedNode, 1)
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 1", mesh2, "Node")
+        mesh2.parent = split1.children[1]
         
         mesh3 = self.graph.addNode(NodeType.mesh)
         self.gui.setNextNodePosition(mesh3, self.currentSelectedNode, 2)
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 2", mesh3, "Node")
+        mesh3.parent = split1.children[2]
+
+    def deleteNode(self):
+        currNode = self.currentSelectedNode
+
+        if currNode is not None and currNode.nodeType != NodeType.init:
+
+            self.gui.nodzWidget.signal_NodeDeleted.emit([currNode.nodzNode])
+            currNode.nodzNode._remove()
+            
+            if currNode.parent is not None:
+                currNode.parent.children.remove(currNode)
+                self.graph.nodes.remove(currNode)
+                self.graph.nodzToNode.pop(currNode.nodzNode)
 
     def nodeSelected(self, nodzNode):
         if nodzNode is not None:
@@ -352,6 +371,7 @@ class Controller(object):
             self.currentSelectedNode.children.append(newNode)
             newNode.parent = self.currentSelectedNode
             newNode.idx = x
+            self.graph.nodes.add(newNode)
             self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Segment '+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
         
         self.currentSelectedNode.segmentDirection = segmentDirection

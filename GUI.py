@@ -51,7 +51,7 @@ class GUI(QtWidgets.QMainWindow):
 
         self.editorWidget.setCurrentIndex(6)
 
-        self.nodzWidget = nodz_main.Nodz(self)
+        self.nodzWidget = nodz_main.Nodz(self, self.controller)
         self.nodzWidget.initialize()
         self.nodzWidget.setMinimumSize(1000, 800)
 

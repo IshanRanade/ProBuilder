@@ -1,1 +1,1 @@
-{"0": {"lotZ": 10, "lotY": 10, "lotX": 10, "nodzPosY": 1414.5, "nodzPosX": 2054.0, "type": 3, "children": []}}
+{"0": {"lotZ": 10.0, "lotY": 10.0, "lotX": 10.0, "nodzPosY": 1479.0, "nodzPosX": 1661.0, "type": 3, "children": [1]}, "1": {"translateX": 0, "translateY": 0, "translateZ": 0, "nodzPosY": 1478.0, "nodzPosX": 1911.0, "type": 0, "children": []}}

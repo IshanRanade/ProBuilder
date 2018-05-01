@@ -222,7 +222,7 @@ class Graph(object):
             scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
         # Mesh Node
         elif node.nodeType == NodeType.mesh:
-            if True:
+            if node.isSet:
                 cmds.file(node.filePath, i=True, namespace="importedMesh", mergeNamespacesOnClash=True)
                 selection = cmds.ls("importedMesh:*", type="mesh")
                 cmds.select(selection[0])
