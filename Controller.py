@@ -234,7 +234,6 @@ class Controller(object):
                     self.deleteNodes()
                     self.graph = None
                     self.graph = Graph(self.nodz)
-                    self.graph.root = self.graph.addNode(NodeType.init)
                     self.currentSelectedNode = self.graph.root
                     childNode = self.graph.root
                     self.setInitialValues(JSON[childIdx]["lotX"], JSON[childIdx]["lotY"], JSON[childIdx]["lotZ"])
