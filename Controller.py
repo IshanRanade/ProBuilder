@@ -70,6 +70,8 @@ class Controller(object):
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 2", mesh3, "Node")
         mesh3.parent = split1.children[2]
 
+        self.currentSelectedNode = None
+
     def testGraph2(self):
         for key in self.graph.nodzToNode:
             key._remove()
@@ -111,10 +113,12 @@ class Controller(object):
         self.graph.createManualEdge(self.currentSelectedNode, "Segment 2", mesh3, "Node")
         mesh3.parent = split1.children[2]
 
+        self.currentSelectedNode = None
+
     def deleteNode(self):
         currNode = self.currentSelectedNode
 
-        if currNode is not None and currNode.nodeType != NodeType.init:
+        if currNode is not None:
 
             self.gui.nodzWidget.signal_NodeDeleted.emit([currNode.nodzNode])
             currNode.nodzNode._remove()
@@ -123,6 +127,34 @@ class Controller(object):
                 currNode.parent.children.remove(currNode)
                 self.graph.nodes.remove(currNode)
                 self.graph.nodzToNode.pop(currNode.nodzNode)
+
+    def deleteNodes(self):
+        currNode = self.currentSelectedNode
+
+        if currNode is not None:
+            nodesToDelete = set()
+            nodesToDelete.add(currNode)
+
+            queue = [currNode]
+            while len(queue) > 0:
+                n = queue[0]
+                del queue[0]
+
+                for child in n.children:
+                    nodesToDelete.add(child)
+                    queue.append(child)
+
+            for n in nodesToDelete:
+                if n.nodzNode is not None:
+                    self.gui.nodzWidget.signal_NodeDeleted.emit([n.nodzNode])
+                    n.nodzNode._remove()
+                    self.graph.nodzToNode.pop(n.nodzNode)
+
+                if n.parent is not None:
+                    n.parent.children.remove(n)
+                
+                self.graph.nodes.remove(n)
+                    
 
     def nodeSelected(self, nodzNode):
         if nodzNode is not None:
@@ -163,38 +195,22 @@ class Controller(object):
 
         JSON = json.load(open(fileName))
 
-        # Delete the existing nodz in the GUI and reset the graph
-        for key in self.graph.nodzToNode:
-            key._remove()
-            self.gui.nodzWidget.signal_NodeDeleted.emit([key])
-            
-        self.graph = None
-
-        # Now parse the json and set up a new graph
-        self.graph = Graph(self.nodz)
-
-        self.graph.root.lotX = float(JSON['0']["lotX"])
-        self.graph.root.lotY = float(JSON['0']["lotY"])
-        self.graph.root.lotZ = float(JSON['0']["lotZ"])
-
-        self.graph.root.nodzNode.setPos(QtCore.QPoint(JSON['0']["nodzPosX"], JSON['0']["nodzPosY"]))
-
         nodeIndexToNode = {}
-        nodeIndexToNode['0'] = self.graph.root
 
         queue = []
-        for childIdx in JSON['0']["children"]:
-            queue.append(('0', str(childIdx)))
+        queue.append((None, '0'))
 
         while len(queue) > 0:
             parentIdx, childIdx = queue[0]
             del queue[0]
 
-            parentNode = nodeIndexToNode[parentIdx]
+            if parentIdx is not None:
+                parentNode = nodeIndexToNode[parentIdx]
             childNode = None
 
             if childIdx not in nodeIndexToNode:
-                childNode = self.graph.addNode(JSON[childIdx]["type"])
+                if JSON[childIdx]["type"] != NodeType.init:
+                    childNode = self.graph.addNode(JSON[childIdx]["type"])
                 self.currentSelectedNode = childNode
 
                 if JSON[childIdx]["type"] == NodeType.translate:
@@ -205,29 +221,39 @@ class Controller(object):
                     self.setScaleValues(JSON[childIdx]["scaleX"], JSON[childIdx]["scaleY"], JSON[childIdx]["scaleZ"])
                 elif JSON[childIdx]["type"] == NodeType.split:
                     self.setSplitValues(JSON[childIdx]["segmentCount"], JSON[childIdx]["segmentDirection"])
-
                     for i in range(0, JSON[childIdx]["segmentCount"]):
                         childNode.children[i].proportion = JSON[str(JSON[childIdx]["children"][i])]["proportion"]
-
                 elif JSON[childIdx]["type"] == NodeType.mesh:
                     childNode.filePath = JSON[childIdx]["meshFile"]
                 elif JSON[childIdx]["type"] == NodeType.splitSegment:
                     childNode.idx = JSON[childIdx]["idx"]
                 elif JSON[childIdx]["type"] == NodeType.repeat:
                     self.setRepeatValues(JSON[childIdx]["direction"], JSON[childIdx]["count"], JSON[childIdx]["percentage"])
+                elif JSON[childIdx]["type"] == NodeType.init:
+                    self.currentSelectedNode = self.graph.root
+                    self.deleteNodes()
+                    self.graph = None
+                    self.graph = Graph(self.nodz)
+                    self.graph.root = self.graph.addNode(NodeType.init)
+                    self.currentSelectedNode = self.graph.root
+                    childNode = self.graph.root
+                    self.setInitialValues(JSON[childIdx]["lotX"], JSON[childIdx]["lotY"], JSON[childIdx]["lotZ"])
             else:
                 childNode = nodeIndexToNode[childIdx]
                 self.currentSelectedNode = childNode
 
-            if JSON[parentIdx]["type"] == NodeType.split:
-                childNode.parent = parentNode
+            if parentIdx is not None:
+                if JSON[parentIdx]["type"] == NodeType.split:
+                    childNode.parent = parentNode
+                else:
+                    childNode.nodzNode.setPos(QtCore.QPoint(JSON[childIdx]["nodzPosX"], JSON[childIdx]["nodzPosY"]))
+
+                    if JSON[parentIdx]["type"] == NodeType.splitSegment:
+                        self.graph.createManualEdge(parentNode.parent, "Segment " + str(parentNode.idx), childNode, "Node")
+                    else:
+                        self.graph.createManualEdge(parentNode, "Node", childNode, "Node")
             else:
                 childNode.nodzNode.setPos(QtCore.QPoint(JSON[childIdx]["nodzPosX"], JSON[childIdx]["nodzPosY"]))
-
-                if JSON[parentIdx]["type"] == NodeType.splitSegment:
-                    self.graph.createManualEdge(parentNode.parent, "Segment " + str(parentNode.idx), childNode, "Node")
-                else:
-                    self.graph.createManualEdge(parentNode, "Node", childNode, "Node")
 
             nodeIndexToNode[childIdx] = childNode
 
@@ -244,7 +270,16 @@ class Controller(object):
         nodeToIndex = {}
 
         # Set the values for each node based on their type
-        queue = [self.graph.root]
+        queue = []
+
+        startNode = None
+        if self.currentSelectedNode is None:
+            startNode = self.graph.root
+        else:
+            startNode = self.currentSelectedNode
+
+        queue.append(startNode)
+
         while len(queue) > 0:
         
             node = queue[0]
@@ -295,7 +330,7 @@ class Controller(object):
                     queue.append(child)
 
         # Now set the children arrays for every node
-        queue = [self.graph.root]
+        queue = [startNode]
         seenNodes = set()
         while len(queue) > 0:
             node = queue[0]

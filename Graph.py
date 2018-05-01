@@ -152,6 +152,8 @@ class Graph(object):
             newNode = MeshNode(self.nodz, self.nodzToNode)
         elif(nodeType == NodeType.repeat):
             newNode = RepeatNode(self.nodz, self.nodzToNode)
+        elif(nodeType == NodeType.init):
+            newNode = InitialNode(self.nodz, self.nodzToNode)
 
         self.nodes.add(newNode)
 
