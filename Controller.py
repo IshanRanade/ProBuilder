@@ -124,7 +124,8 @@ class Controller(object):
             currNode.nodzNode._remove()
             
             if currNode.parent is not None:
-                currNode.parent.children.remove(currNode)
+                if currNode in currNode.parent.children:
+                    currNode.parent.children.remove(currNode)
                 self.graph.nodes.remove(currNode)
                 self.graph.nodzToNode.pop(currNode.nodzNode)
 
