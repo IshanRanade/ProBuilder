@@ -151,7 +151,8 @@ class Controller(object):
                     self.graph.nodzToNode.pop(n.nodzNode)
 
                 if n.parent is not None:
-                    n.parent.children.remove(n)
+                    if n in n.parent.children:
+                        n.parent.children.remove(n)
                 
                 self.graph.nodes.remove(n)
                     
@@ -191,7 +192,7 @@ class Controller(object):
 
     def loadGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = 'D:\ProBuilder\ProBuilder\Graphs\graph1.json'
+        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json'
 
         JSON = json.load(open(fileName))
 
@@ -270,7 +271,7 @@ class Controller(object):
 
     def saveGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = 'D:\ProBuilder\ProBuilder\Graphs\graph1.json'
+        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json'
 
         graphData = {}
 
