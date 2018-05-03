@@ -121,13 +121,22 @@ class Controller(object):
 
         if currNode is not None:
 
-            self.gui.nodzWidget.signal_NodeDeleted.emit([currNode.nodzNode])
+            #self.gui.nodzWidget.signal_NodeDeleted.emit([currNode.nodzNode])
             currNode.nodzNode._remove()
             
+            print currNode
+            #print currNode.parent
+            #print currNode.parent.children
             if currNode.parent is not None:
-                currNode.parent.children.remove(currNode)
-                self.graph.nodes.remove(currNode)
-                self.graph.nodzToNode.pop(currNode.nodzNode)
+                if currNode in currNode.parent.children:
+                    currNode.parent.children.remove(currNode)
+
+            for child in currNode.children:
+                child.parent = None
+            self.graph.nodes.remove(currNode)
+            self.graph.nodzToNode.pop(currNode.nodzNode)
+            #print currNode.parent.children
+            print len(self.graph.nodes)
 
     def deleteNodes(self):
         currNode = self.currentSelectedNode
@@ -147,12 +156,16 @@ class Controller(object):
 
             for n in nodesToDelete:
                 if n.nodzNode is not None:
-                    self.gui.nodzWidget.signal_NodeDeleted.emit([n.nodzNode])
+                    #self.gui.nodzWidget.signal_NodeDeleted.emit([n.nodzNode])
                     n.nodzNode._remove()
                     self.graph.nodzToNode.pop(n.nodzNode)
 
                 if n.parent is not None:
-                    n.parent.children.remove(n)
+                    if n in n.parent.children:
+                        n.parent.children.remove(n)
+
+                for child in n.children:
+                    child.parent = None
                 
                 self.graph.nodes.remove(n)
                     
@@ -192,7 +205,7 @@ class Controller(object):
 
     def loadGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = 'D:\ProBuilder\ProBuilder\Graphs\graph1.json'
+        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json'
 
         JSON = json.load(open(fileName))
 
@@ -201,7 +214,10 @@ class Controller(object):
         queue = []
         queue.append((None, '0'))
 
+        M = {}
+
         while len(queue) > 0:
+
             parentIdx, childIdx = queue[0]
             del queue[0]
 
@@ -210,7 +226,12 @@ class Controller(object):
             childNode = None
 
             if childIdx not in nodeIndexToNode:
-                if JSON[childIdx]["type"] != NodeType.init:
+                if JSON[childIdx]["type"] == NodeType.splitSegment:
+                    print M
+                    print type(M[childIdx])
+                    print nodeIndexToNode[M[childIdx]]
+                    childNode = nodeIndexToNode[M[childIdx]].children[JSON[M[childIdx]]["children"].index(int(childIdx))]
+                elif JSON[childIdx]["type"] != NodeType.init:
                     childNode = self.graph.addNode(JSON[childIdx]["type"])
                 self.currentSelectedNode = childNode
 
@@ -221,10 +242,17 @@ class Controller(object):
                 elif JSON[childIdx]["type"] == NodeType.scale:
                     self.setScaleValues(JSON[childIdx]["scaleX"], JSON[childIdx]["scaleY"], JSON[childIdx]["scaleZ"])
                 elif JSON[childIdx]["type"] == NodeType.split:
+                    self.currentSelectedNode.segmentCount = 0
                     self.setSplitValues(JSON[childIdx]["segmentCount"] )
                     self.setSplitDir(JSON[childIdx]["segmentDirection"])
+
+                    print JSON[childIdx]["children"]
+                    for c in JSON[childIdx]["children"]:
+                        M[str(c)] = childIdx
+
                     for i in range(0, JSON[childIdx]["segmentCount"]):
                         childNode.children[i].proportion = JSON[str(JSON[childIdx]["children"][i])]["proportion"]
+
                 elif JSON[childIdx]["type"] == NodeType.mesh:
                     childNode.filePath = JSON[childIdx]["meshFile"]
 
@@ -258,9 +286,12 @@ class Controller(object):
                     childNode.nodzNode.setPos(QtCore.QPoint(JSON[childIdx]["nodzPosX"], JSON[childIdx]["nodzPosY"]))
 
                     if JSON[parentIdx]["type"] == NodeType.splitSegment:
-                        self.graph.createManualEdge(parentNode.parent, "Segment " + str(parentNode.idx), childNode, "Node")
+                        self.graph.nodz.createConnection(parentNode.parent.nodzNode, "Segment " + str(parentNode.idx), childNode.nodzNode, "Node")
+                        # childNode.parent = parentNode
+                        # parentNode.children.append(childNode)
                     else:
                         self.graph.createManualEdge(parentNode, "Node", childNode, "Node")
+                        
             else:
                 childNode.nodzNode.setPos(QtCore.QPoint(JSON[childIdx]["nodzPosX"], JSON[childIdx]["nodzPosY"]))
 
@@ -271,7 +302,7 @@ class Controller(object):
 
     def saveGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = 'D:\ProBuilder\ProBuilder\Graphs\graph1.json'
+        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json'
 
         graphData = {}
 
@@ -290,6 +321,8 @@ class Controller(object):
         queue.append(startNode)
 
         while len(queue) > 0:
+
+            print graphData
         
             node = queue[0]
             del queue[0]

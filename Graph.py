@@ -219,7 +219,6 @@ class Graph(object):
             np.array([1.0*self.root.lotX, 1.0*self.root.lotY, 1.0*self.root.lotZ]))
 
     def generateMeshHelper(self, node, translate, rotate, scale):
-
         # Translate Node
         if node.nodeType == NodeType.translate:
             translate = np.add(translate, np.array([node.translateX, node.translateY, node.translateZ]))
