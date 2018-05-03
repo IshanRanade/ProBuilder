@@ -124,9 +124,6 @@ class Controller(object):
             #self.gui.nodzWidget.signal_NodeDeleted.emit([currNode.nodzNode])
             currNode.nodzNode._remove()
             
-            print currNode
-            #print currNode.parent
-            #print currNode.parent.children
             if currNode.parent is not None:
                 if currNode in currNode.parent.children:
                     currNode.parent.children.remove(currNode)
@@ -135,8 +132,6 @@ class Controller(object):
                 child.parent = None
             self.graph.nodes.remove(currNode)
             self.graph.nodzToNode.pop(currNode.nodzNode)
-            #print currNode.parent.children
-            print len(self.graph.nodes)
 
     def resetGraph(self):
         for key in self.graph.nodzToNode:
@@ -236,9 +231,6 @@ class Controller(object):
 
             if childIdx not in nodeIndexToNode:
                 if JSON[childIdx]["type"] == NodeType.splitSegment:
-                    print M
-                    print type(M[childIdx])
-                    print nodeIndexToNode[M[childIdx]]
                     childNode = nodeIndexToNode[M[childIdx]].children[JSON[M[childIdx]]["children"].index(int(childIdx))]
                 elif JSON[childIdx]["type"] != NodeType.init:
                     childNode = self.graph.addNode(JSON[childIdx]["type"])
@@ -255,7 +247,6 @@ class Controller(object):
                     self.setSplitValues(JSON[childIdx]["segmentCount"] )
                     self.setSplitDir(JSON[childIdx]["segmentDirection"])
 
-                    print JSON[childIdx]["children"]
                     for c in JSON[childIdx]["children"]:
                         M[str(c)] = childIdx
 
@@ -330,8 +321,6 @@ class Controller(object):
         queue.append(startNode)
 
         while len(queue) > 0:
-
-            print graphData
         
             node = queue[0]
             del queue[0]
