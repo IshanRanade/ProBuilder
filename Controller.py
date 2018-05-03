@@ -138,6 +138,16 @@ class Controller(object):
             #print currNode.parent.children
             print len(self.graph.nodes)
 
+    def resetGraph(self):
+        for key in self.graph.nodzToNode:
+            key._remove()
+
+        self.graph.nodes = []
+        self.graph.nodzToNode = {}
+
+        self.graph = None
+        self.graph = Graph(self.nodz)
+
     def deleteNodes(self):
         currNode = self.currentSelectedNode
 

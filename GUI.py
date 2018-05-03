@@ -172,13 +172,9 @@ class Generate(QtWidgets.QWidget):
         self.button2.clicked.connect(controller.printGraph)
         self.layout.addWidget(self.button2)
 
-        self.button3 = QtWidgets.QPushButton("Sample 1")
-        self.button3.clicked.connect(controller.testGraph1)
+        self.button3 = QtWidgets.QPushButton("Reset")
+        self.button3.clicked.connect(controller.resetGraph)
         self.layout.addWidget(self.button3)
-
-        self.button4 = QtWidgets.QPushButton("Sample 2")
-        self.button4.clicked.connect(controller.testGraph2)
-        self.layout.addWidget(self.button4)
 
         self.setLayout(self.layout)
 
