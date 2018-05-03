@@ -4,6 +4,7 @@ from GUI import GUI
 from Qt import QtGui, QtCore, QtWidgets
 import os
 import json
+import math
 
 
 class Controller(object):
@@ -191,7 +192,7 @@ class Controller(object):
 
     def loadGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Graphs/graph1.json'
+        fileName = 'D:\ProBuilder\ProBuilder\Graphs\graph1.json'
 
         JSON = json.load(open(fileName))
 
@@ -220,15 +221,24 @@ class Controller(object):
                 elif JSON[childIdx]["type"] == NodeType.scale:
                     self.setScaleValues(JSON[childIdx]["scaleX"], JSON[childIdx]["scaleY"], JSON[childIdx]["scaleZ"])
                 elif JSON[childIdx]["type"] == NodeType.split:
-                    self.setSplitValues(JSON[childIdx]["segmentCount"], JSON[childIdx]["segmentDirection"])
+                    self.setSplitValues(JSON[childIdx]["segmentCount"] )
+                    self.setSplitDir(JSON[childIdx]["segmentDirection"])
                     for i in range(0, JSON[childIdx]["segmentCount"]):
                         childNode.children[i].proportion = JSON[str(JSON[childIdx]["children"][i])]["proportion"]
                 elif JSON[childIdx]["type"] == NodeType.mesh:
                     childNode.filePath = JSON[childIdx]["meshFile"]
+
+                    if(childNode.filePath != None):
+                        childNode.isSet = True
+
+                    
                 elif JSON[childIdx]["type"] == NodeType.splitSegment:
                     childNode.idx = JSON[childIdx]["idx"]
                 elif JSON[childIdx]["type"] == NodeType.repeat:
-                    self.setRepeatValues(JSON[childIdx]["direction"], JSON[childIdx]["count"], JSON[childIdx]["percentage"])
+                    self.setRepeatDir(JSON[childIdx]["direction"])
+                    self.setRepeatMax(JSON[childIdx]["count"])
+                    self.setRepeatSize(JSON[childIdx]["percentage"])
+                    
                 elif JSON[childIdx]["type"] == NodeType.init:
                     self.currentSelectedNode = self.graph.root
                     self.deleteNodes()
@@ -261,7 +271,7 @@ class Controller(object):
 
     def saveGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/Graphs/graph1.json'
+        fileName = 'D:\ProBuilder\ProBuilder\Graphs\graph1.json'
 
         graphData = {}
 
@@ -355,9 +365,9 @@ class Controller(object):
             self.gui.editorWidget.currentWidget().translateYLineEdit.setText(str(node.translateY))
             self.gui.editorWidget.currentWidget().translateZLineEdit.setText(str(node.translateZ))
         elif node.nodeType == NodeType.rotate:
-            self.gui.editorWidget.currentWidget().rotateXLineEdit.setText(str(node.rotateX))
-            self.gui.editorWidget.currentWidget().rotateYLineEdit.setText(str(node.rotateY))
-            self.gui.editorWidget.currentWidget().rotateZLineEdit.setText(str(node.rotateZ))
+            self.gui.editorWidget.currentWidget().rotateXLineEdit.setText(str(node.rotateX*180.0/math.pi))
+            self.gui.editorWidget.currentWidget().rotateYLineEdit.setText(str(node.rotateY*180.0/math.pi))
+            self.gui.editorWidget.currentWidget().rotateZLineEdit.setText(str(node.rotateZ*180.0/math.pi))
         elif node.nodeType == NodeType.scale:
             self.gui.editorWidget.currentWidget().scaleXLineEdit.setText(str(node.scaleX))
             self.gui.editorWidget.currentWidget().scaleYLineEdit.setText(str(node.scaleY))
@@ -399,7 +409,8 @@ class Controller(object):
         self.currentSelectedNode.scaleY = scaleYValue
         self.currentSelectedNode.scaleZ = scaleZValue
 
-    def setSplitValues(self, segmentCount, segmentDirection):
+#NEW
+    def setSplitValues(self, segmentCount):
         for x in range(self.currentSelectedNode.segmentCount, segmentCount):
             newNode = self.graph.addNode(NodeType.splitSegment)
             self.currentSelectedNode.children.append(newNode)
@@ -408,16 +419,26 @@ class Controller(object):
             self.graph.nodes.add(newNode)
             self.currentSelectedNode.nodz.createAttribute(node=self.currentSelectedNode.nodzNode, name='Segment '+str(x), index=x, preset='attr_preset_1', plug=True, socket=False, dataType=str)
         
-        self.currentSelectedNode.segmentDirection = segmentDirection
         self.currentSelectedNode.segmentCount = segmentCount
+
+    def setSplitDir(self, segmentDirection):
+        
+        self.currentSelectedNode.segmentDirection = segmentDirection
 
     def setSplitSegmentValues(self, proportion):
         self.currentSelectedNode.children[self.currentSelectedAttribute].proportion = proportion
 
-    def setRepeatValues(self, direction, count, percentage):
+
+#NEW
+    def setRepeatDir(self, direction):
         self.currentSelectedNode.direction = direction
+
+    def setRepeatMax(self, count):
         self.currentSelectedNode.count = count
+
+    def setRepeatSize(self, percentage):
         self.currentSelectedNode.percentage = percentage
+#
 
     def setMeshName(self, name):
         self.currentSelectedNode.filePath = name

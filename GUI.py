@@ -1,5 +1,6 @@
 from Qt import QtGui, QtCore, QtWidgets
 import nodz_main
+import math
 
 from Graph import NodeType
 
@@ -273,7 +274,9 @@ class EditorRotate(Editor):
 
     def setValues(self):
         if self.rotateXLineEdit.text() not in ["-", ""] and self.rotateYLineEdit.text() not in ["-", ""] and self.rotateZLineEdit.text() not in ["-", ""]:
-            self.controller.setRotateValues(float(self.rotateXLineEdit.text()), float(self.rotateYLineEdit.text()), float(self.rotateZLineEdit.text()))
+            self.controller.setRotateValues(float(self.rotateXLineEdit.text())*math.pi/180.0,
+                                            float(self.rotateYLineEdit.text())*math.pi/180.0,
+                                            float(self.rotateZLineEdit.text())*math.pi/180.0)
 
 class EditorScale(Editor):
 
@@ -387,7 +390,7 @@ class EditorSplit(Editor):
         self.segmentCountSpinBox = QtWidgets.QSpinBox()
         self.segmentCountSpinBox.setSingleStep(1)
         self.segmentCountSpinBox.setRange(0, 10)
-        self.segmentCountSpinBox.valueChanged.connect(self.setValues)
+        self.segmentCountSpinBox.valueChanged.connect(self.setValues1)
         self.segmentCount.addWidget(self.segmentCountLabel)
         self.segmentCount.addWidget(self.segmentCountSpinBox)
         self.layout.addLayout(self.segmentCount)
@@ -397,15 +400,17 @@ class EditorSplit(Editor):
         self.segmentDirectionSpinBox = QtWidgets.QSpinBox()
         self.segmentDirectionSpinBox.setSingleStep(1)
         self.segmentDirectionSpinBox.setRange(0, 2)
-        self.segmentDirectionSpinBox.valueChanged.connect(self.setValues)
+        self.segmentDirectionSpinBox.valueChanged.connect(self.setValues2)
         self.segmentDirection.addWidget(self.segmentDirectionLabel)
         self.segmentDirection.addWidget(self.segmentDirectionSpinBox)
         self.layout.addLayout(self.segmentDirection)
 
         self.setLayout(self.layout)
-
-    def setValues(self):
-        self.controller.setSplitValues(self.segmentCountSpinBox.value(), self.segmentDirectionSpinBox.value())
+#NEW
+    def setValues1(self):
+        self.controller.setSplitValues(self.segmentCountSpinBox.value())
+    def setValues2(self):
+        self.controller.setSplitDir(self.segmentDirectionSpinBox.value())
 
 class EditorSplitSegment(Editor):
     def __init__(self, parent, controller):
@@ -438,7 +443,7 @@ class EditorRepeat(Editor):
         self.directionSpinBox = QtWidgets.QSpinBox()
         self.directionSpinBox.setSingleStep(1)
         self.directionSpinBox.setRange(0, 2)
-        self.directionSpinBox.valueChanged.connect(self.setValues)
+        self.directionSpinBox.valueChanged.connect(self.setValues1)
         self.repeatDirection.addWidget(self.directionLabel)
         self.repeatDirection.addWidget(self.directionSpinBox)
         self.layout.addLayout(self.repeatDirection)
@@ -447,7 +452,7 @@ class EditorRepeat(Editor):
         self.repeatCountLabel = QtWidgets.QLabel("Max: ")
         self.repeatCountLineEdit = QtWidgets.QLineEdit()
         self.repeatCountLineEdit.setValidator(QtGui.QIntValidator(0,1000,self))
-        self.repeatCountLineEdit.textEdited.connect(self.setValues)
+        self.repeatCountLineEdit.textEdited.connect(self.setValues2)
         self.repeatCount.addWidget(self.repeatCountLabel)
         self.repeatCount.addWidget(self.repeatCountLineEdit)
         self.layout.addLayout(self.repeatCount)
@@ -457,13 +462,19 @@ class EditorRepeat(Editor):
         self.repeatPercentageSpinBox = QtWidgets.QSpinBox()
         self.repeatPercentageSpinBox.setSingleStep(1)
         self.repeatPercentageSpinBox.setRange(0, 100)
-        self.repeatPercentageSpinBox.valueChanged.connect(self.setValues)
+        self.repeatPercentageSpinBox.valueChanged.connect(self.setValues3)
         self.repeatPercentage.addWidget(self.repeatPercentageLabel)
         self.repeatPercentage.addWidget(self.repeatPercentageSpinBox)
         self.layout.addLayout(self.repeatPercentage)
 
         self.setLayout(self.layout)
     
-    def setValues(self):
+    def setValues1(self):
         if self.repeatCountLineEdit.text() not in ["-", ""]:
-            self.controller.setRepeatValues(self.directionSpinBox.value(), int(self.repeatCountLineEdit.text()), self.repeatPercentageSpinBox.value())
+            self.controller.setRepeatDir(self.directionSpinBox.value())
+    def setValues2(self):
+        if self.repeatCountLineEdit.text() not in ["-", ""]:
+            self.controller.setRepeatMax(int(self.repeatCountLineEdit.text()))
+    def setValues3(self):
+        if self.repeatCountLineEdit.text() not in ["-", ""]:
+            self.controller.setRepeatSize(self.repeatPercentageSpinBox.value())
