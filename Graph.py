@@ -117,14 +117,19 @@ class MeshNode(Node):
 
 class RepeatNode(Node):
 
+    count = None
+    percentage = None
+
     def __init__(self, nodz, nodzToNode):
         super(RepeatNode, self).__init__(NodeType.repeat, nodz, nodzToNode, True, True)
 
         self.direction = 0
         self.count = 5
-        self.percentage = 20
+        self.percentage = 20.0
 
 class Graph(object):
+
+    mesh_ID = 0
 
     def __init__(self, nodz):
         self.nodzToNode = {}
@@ -132,6 +137,7 @@ class Graph(object):
         self.nodz = nodz
         self.root = InitialNode(self.nodz, self.nodzToNode)
         self.nodes.add(self.root)
+        file_ID = 0
 
     def getNodeFromNodz(self, nodzNode):
         return self.nodzToNode[nodzNode]
@@ -207,6 +213,7 @@ class Graph(object):
         polyMeshes = cmds.filterExpand(transforms, sm=12)
         cmds.select(polyMeshes, r=True)
         cmds.delete()
+        self.file_ID = 0
 
         self.generateMeshHelper(self.root, np.array([0.0,0.0,0.0]), np.array([1.0,0.0,0.0,0.0]), 
             np.array([1.0*self.root.lotX, 1.0*self.root.lotY, 1.0*self.root.lotZ]))
@@ -224,32 +231,79 @@ class Graph(object):
             scale = np.multiply(scale, np.array([node.scaleX, node.scaleY, node.scaleZ]))
         # Mesh Node
         elif node.nodeType == NodeType.mesh:
+
+            cmds.select( clear=True )
+                        
             if node.isSet:
-                cmds.file(node.filePath, i=True, namespace="importedMesh", mergeNamespacesOnClash=True)
-                selection = cmds.ls("importedMesh:*", type="mesh")
-                cmds.select(selection[0])
+
+                cmds.select( clear=True )
+                
+                #NEW
+                path = "C:\\Users\\Administrator\\Desktop\\Models\\" + node.filePath + ".ma"
+                
+                cmds.file(path, i=True, namespace=node.filePath + str(self.mesh_ID), mergeNamespacesOnClash=True)
+                selection = cmds.ls(node.filePath+ str(self.mesh_ID)+":*", type="mesh")
+
+                for item in selection:
+                
+                    cmds.select(item)
+                    ax, ay, az = LinAlg.euler_from_quaternion(rotate)
+                    
+                    ax = ax * 180.0 / math.pi
+                    ay = ay * 180.0 / math.pi
+                    az = az * 180.0 / math.pi
+
+                    cmds.scale(scale[0], scale[1], scale[2])
+                    cmds.move(translate[0] + 0.5 * scale[0],translate[1] + 0.5 * scale[1],translate[2] + 0.5 * scale[2])
+                    cmds.rotate(ax,ay,az)
+                    
+                cmds.select( clear=True )
+                self.mesh_ID +=1;
             else:
                 cmds.polyCube()
+                ax, ay, az = LinAlg.euler_from_quaternion(rotate)
 
-            ax, ay, az = LinAlg.euler_from_quaternion(rotate)
-            ax = ax* 180.0/math.pi
-            ay = ay* 180.0/math.pi
-            az = az* 180.0/math.pi
-            cmds.scale(scale[0], scale[1], scale[2])
-            cmds.move(translate[0] + 0.5 * scale[0],translate[1] + 0.5 * scale[1],translate[2] + 0.5 * scale[2])
-            cmds.rotate(ax,ay,az)
+                ax = ax * 180.0 / math.pi
+                ay = ay * 180.0 / math.pi
+                az = az * 180.0 / math.pi
+
+                cmds.scale(scale[0], scale[1], scale[2])
+                cmds.move(translate[0] + 0.5 * scale[0],translate[1] + 0.5 * scale[1],translate[2] + 0.5 * scale[2])
+                cmds.rotate(ax,ay,az)
+
         # Repeat Node
+
+        #NEW!
         elif node.nodeType == NodeType.repeat:
             if len(node.children) > 0:
-                maxRange = min(int(node.count), int(100.0 / (1.0 * node.percentage)))
+                #maxRange = min(int(node.count), int(100.0 / (1.0 * node.percentage)))
+                maxRange = int(node.count)
+                
                 for i in range(0, maxRange):
+
+                    percentage = 100.0 / float(node.count)
+
+                    rot_dir = np.array([0,0,0,1])
+                    rot_dir[node.direction] = scale[node.direction]
+
+                    # In fact we need to translate rotate to eular angles....FxxK!
+                    ax, ay, az = LinAlg.euler_from_quaternion(rotate)
+                    # Compute Rotate Matrix
+                    R = LinAlg.euler_matrix(ax,ay,az,'sxyz')
+                    # Rotate the scaled direction
+                    rot_dir = np.dot(R , rot_dir)
+
                     tempTranslate = np.array(translate)
-                    tempTranslate[node.direction] += scale[node.direction] * i * (1.0 * node.percentage / 100.0)
+                    tempTranslate[0] += rot_dir[0] * i * (1.0 * percentage / 100.0)
+                    tempTranslate[1] += rot_dir[1] * i * (1.0 * percentage / 100.0)
+                    tempTranslate[2] += rot_dir[2] * i * (1.0 * percentage / 100.0)
 
                     tempScale = np.array(scale)
-                    tempScale[node.direction] = scale[node.direction] * (1.0 * node.percentage / 100.0)
+                    tempScale[node.direction] = scale[node.direction] * (1.0 * percentage / 100.0)
 
-                    self.generateMeshHelper(node.children[0], np.array(tempTranslate), np.array(rotate), np.array(tempScale))
+
+                    for child in node.children:
+                        self.generateMeshHelper(child, np.array(tempTranslate), np.array(rotate), np.array(tempScale))
 
             return
         # Split Segment Node
@@ -265,7 +319,21 @@ class Graph(object):
                 if i < node.idx:
                     prevWeight += 1.0 * child.proportion
 
-            translate[node.parent.segmentDirection] += (1.0 * scale[node.parent.segmentDirection] * prevWeight) / (1.0 * totalWeight)
+            # Supports any rotation
+            rot_dir = np.array([0,0,0,1])
+            rot_dir[node.parent.segmentDirection] = scale[node.parent.segmentDirection]
+            # In fact we need to translate rotate to eular angles....FxxK!
+            ax, ay, az = LinAlg.euler_from_quaternion(rotate)
+            # Compute Rotate Matrix
+            R = LinAlg.euler_matrix(ax,ay,az,'sxyz')
+            # Rotate the scaled direction
+            rot_dir = np.dot(R , rot_dir)
+
+            translate[0] += (1.0 * rot_dir[0] * prevWeight) / (1.0 * totalWeight)
+            translate[1] += (1.0 * rot_dir[1] * prevWeight) / (1.0 * totalWeight)
+            translate[2] += (1.0 * rot_dir[2] * prevWeight) / (1.0 * totalWeight)
+            
+            #translate[node.parent.segmentDirection] += (1.0 * scale[node.parent.segmentDirection] * prevWeight) / (1.0 * totalWeight)
             scale[node.parent.segmentDirection] *= (1.0 * node.proportion / totalWeight)
         # Split Node
         elif node.nodeType == NodeType.split:
