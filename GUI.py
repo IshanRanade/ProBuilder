@@ -156,25 +156,33 @@ class Generate(QtWidgets.QWidget):
         self.label.setAlignment(QtCore.Qt.AlignHCenter)
         self.layout.addWidget(self.label)
 
-        self.buttonLoad = QtWidgets.QPushButton("Load")
-        self.buttonLoad.clicked.connect(controller.loadGraph)
-        self.layout.addWidget(self.buttonLoad)
-
-        self.buttonSave = QtWidgets.QPushButton("Save")
-        self.buttonSave.clicked.connect(controller.saveGraph)
-        self.layout.addWidget(self.buttonSave)
-
         self.button = QtWidgets.QPushButton("Generate")
         self.button.clicked.connect(controller.generateMesh)
         self.layout.addWidget(self.button)
 
-        self.button2 = QtWidgets.QPushButton("Print Graph")
-        self.button2.clicked.connect(controller.printGraph)
-        self.layout.addWidget(self.button2)
-
         self.button3 = QtWidgets.QPushButton("Reset")
         self.button3.clicked.connect(controller.resetGraph)
         self.layout.addWidget(self.button3)
+
+        self.loadLabel = QtWidgets.QLabel("Load File:")
+        self.layout.addWidget(self.loadLabel)
+        self.loadLineEdit = QtWidgets.QLineEdit()
+        self.layout.addWidget(self.loadLineEdit)
+        self.loadLineEdit.setText('/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json')
+
+        self.buttonLoad = QtWidgets.QPushButton("Load")
+        self.buttonLoad.clicked.connect(controller.loadGraph)
+        self.layout.addWidget(self.buttonLoad)
+
+        self.saveLabel = QtWidgets.QLabel("Save File:")
+        self.layout.addWidget(self.saveLabel)
+        self.saveLineEdit = QtWidgets.QLineEdit()
+        self.layout.addWidget(self.saveLineEdit)
+        self.saveLineEdit.setText('/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json')
+
+        self.buttonSave = QtWidgets.QPushButton("Save")
+        self.buttonSave.clicked.connect(controller.saveGraph)
+        self.layout.addWidget(self.buttonSave)
 
         self.setLayout(self.layout)
 

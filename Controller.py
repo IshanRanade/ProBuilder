@@ -214,8 +214,7 @@ class Controller(object):
         self.graph.generateMesh()
 
     def loadGraph(self, fileName=None):
-        #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json'
+        fileName = self.gui.generateWidget.loadLineEdit.text()
 
         JSON = json.load(open(fileName))
 
@@ -312,7 +311,7 @@ class Controller(object):
 
     def saveGraph(self, fileName=None):
         #fileName = QtWidgets.QFileDialog.getOpenFileName(None)
-        fileName = '/Users/ishan/Documents/UniversityOfPennsylvania/UniversityOfPennsylvania/Spring2018/CIS660/ProBuilder/graph1.json'
+        fileName = self.gui.generateWidget.saveLineEdit.text()
 
         graphData = {}
 
