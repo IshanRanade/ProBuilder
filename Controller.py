@@ -211,7 +211,11 @@ class Controller(object):
     def loadGraph(self, fileName=None):
         fileName = self.gui.generateWidget.loadLineEdit.text()
 
-        JSON = json.load(open(fileName))
+        try:
+            JSON = json.load(open(fileName))
+        except:
+            print "Could not load file"
+            return
 
         nodeIndexToNode = {}
 

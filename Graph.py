@@ -3,6 +3,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 import LinAlg
 import math
+import sys
 
 class NodeType(object):
     translate = 0
@@ -238,8 +239,12 @@ class Graph(object):
                 cmds.select( clear=True )
                 
                 #NEW
-                path = "C:\\Users\\Administrator\\Desktop\\Models\\" + node.filePath + ".ma"
-                
+                path = node.filePath
+                path = path.replace("/", "//")
+                path = path.replace("\\", "\\\\")
+
+                print path
+
                 cmds.file(path, i=True, namespace=node.filePath + str(self.mesh_ID), mergeNamespacesOnClash=True)
                 selection = cmds.ls(node.filePath+ str(self.mesh_ID)+":*", type="mesh")
 
