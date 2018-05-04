@@ -233,6 +233,7 @@ class Graph(object):
         elif node.nodeType == NodeType.mesh:
 
             cmds.select( clear=True )
+
                         
             if node.isSet:
 
@@ -243,10 +244,13 @@ class Graph(object):
                 path = path.replace("/", "//")
                 path = path.replace("\\", "\\\\")
 
-                print path
+                
 
-                cmds.file(path, i=True, namespace=node.filePath + str(self.mesh_ID), mergeNamespacesOnClash=True)
-                selection = cmds.ls(node.filePath+ str(self.mesh_ID)+":*", type="mesh")
+                cmds.file(path, i=True, namespace="mesh" + str(self.mesh_ID), mergeNamespacesOnClash=True)
+
+
+                selection = cmds.ls("mesh" + str(self.mesh_ID)+":*")
+
 
                 for item in selection:
                 
@@ -262,7 +266,6 @@ class Graph(object):
                     cmds.rotate(ax,ay,az)
                     
                 cmds.select( clear=True )
-                self.mesh_ID +=1;
             else:
                 cmds.polyCube()
                 ax, ay, az = LinAlg.euler_from_quaternion(rotate)
@@ -274,6 +277,8 @@ class Graph(object):
                 cmds.scale(scale[0], scale[1], scale[2])
                 cmds.move(translate[0] + 0.5 * scale[0],translate[1] + 0.5 * scale[1],translate[2] + 0.5 * scale[2])
                 cmds.rotate(ax,ay,az)
+
+            self.mesh_ID +=1
 
         # Repeat Node
 
